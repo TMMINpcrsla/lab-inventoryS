@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Lab Inventory">
+    <meta name="theme-color" content="#1976D2">
+    <title>Lab Inventory - Mahasiswa</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F5F7FA;
+            color: #333333;
+            min-height: 100vh;
+        }
+
+        /* ========== LOGIN PAGE ========== */
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #1976D2, #1565C0);
+        }
+
+        .login-card {
+            background: white;
+            border-radius: 24px;
+            padding: 32px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .login-icon {
+            text-align: center;
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .login-title {
+            text-align: center;
+            font-size: 24px;
+            font-weight: 700;
+            color: #1976D2;
+            margin-bottom: 8px;
+        }
+
+        .login-subtitle {
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 32px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: #555;
+            margin-bottom: 6px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1.5px solid #E0E0E0;
+            border-radius: 12px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #1976D2;
+            box-shadow: 0 0 0 3px rgba(25,118,210,0.1);
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 14px;
+            background: #1976D2;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 8px;
+        }
+
+        .btn-login:hover {
+            background: #1565C0;
+            transform: translateY(-2px);
+        }
+
+        .login-footer {
+            text-align: center;
+            font-size: 11px;
+            color: #999;
+            margin-top: 24px;
+        }
+
+        /* ========== MAIN APP (Dashboard) ========== */
+        .app-container {
+            display: none;
+            min-height: 100vh;
+            background: #F5F7FA;
+        }
+
+        /* Header */
+        .app-header {
+            background: linear-gradient(135deg, #1976D2, #1565C0);
+            padding: 20px;
+            padding-top: 50px;
+            color: white;
+        }
+
+        .app-header h2 {
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+
+        .app-header p {
+            font-size: 13px;
+            opacity: 0.8;
+        }
+
+        /* Menu Grid */
+        .menu-grid {
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .menu-card {
+            background: white;
+            border-radius: 20px;
+            padding: 24px 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .menu-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        .menu-icon {
+            font-size: 40px;
+            margin-bottom: 12px;
+        }
+
+        .menu-title {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .menu-desc {
+            font-size: 11px;
+            color: #999;
+        }
+
+        /* Info Card */
+        .info-card {
+            background: white;
+            margin: 0 20px 20px 20px;
+            padding: 16px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .info-icon {
+            font-size: 28px;
+        }
+
+        .info-text {
+            flex: 1;
+        }
+
+        .info-text h4 {
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+
+        .info-text p {
+            font-size: 11px;
+            color: #666;
+        }
+
+        /* Logout Button */
+        .btn-logout {
+            margin: 0 20px 30px 20px;
+            padding: 14px;
+            background: #EF4444;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            width: calc(100% - 40px);
+        }
+
+        /* ========== LIST BARANG PAGE ========== */
+        .page {
+            display: none;
+            min-height: 100vh;
+            background: #F5F7FA;
+        }
+
+        .page-header {
+            background: #1976D2;
+            padding: 20px;
+            padding-top: 50px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .back-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            font-size: 20px;
+            cursor: pointer;
+            color: white;
+        }
+
+        .page-header h1 {
+            color: white;
+            font-size: 20px;
+            flex: 1;
+        }
+
+        /* Sort Spinner */
+        .sort-container {
+            padding: 16px;
+            background: white;
+            margin: 16px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .sort-container label {
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .sort-select {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #E0E0E0;
+            border-radius: 10px;
+            font-size: 13px;
+        }
+
+        /* Item List */
+        .items-list {
+            padding: 0 16px;
+        }
+
+        .item-card {
+            background: white;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .item-name {
+            font-weight: 600;
+            font-size: 15px;
+            margin-bottom: 4px;
+        }
+
+        .item-status {
+            font-size: 12px;
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+        }
+
+        .status-tersedia {
+            background: #E8F5E9;
+            color: #2E7D32;
+        }
+
+        .status-dipinjam {
+            background: #FFEBEE;
+            color: #C62828;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 16px;
+            padding: 20px;
+        }
+
+        .page-btn {
+            background: #1976D2;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .page-btn:disabled {
+            background: #CCC;
+            cursor: not-allowed;
+        }
+
+        .page-info {
+            font-size: 13px;
+            color: #666;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        /* History Page */
+        .history-item {
+            background: white;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .history-item-name {
+            font-weight: 600;
+            font-size: 15px;
+            margin-bottom: 8px;
+        }
+
+        .history-date {
+            font-size: 11px;
+            color: #999;
+            margin-bottom: 4px;
+        }
+
+        .history-status {
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        /* Aturan Page */
+        .aturan-content {
+            padding: 20px;
+        }
+
+        .aturan-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .aturan-title {
+            font-weight: 700;
+            font-size: 16px;
+            color: #1976D2;
+            margin-bottom: 8px;
+        }
+
+        .aturan-text {
+            font-size: 13px;
+            color: #444;
+            line-height: 1.5;
+        }
+
+        .warning-card {
+            background: #FFF3E0;
+            border-left: 4px solid #F57C00;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- ========== LOGIN PAGE ========== -->
+<div id="loginPage" class="login-container">
+    <div class="login-card">
+        <div class="login-icon">🔬</div>
+        <h1 class="login-title">Lab Inventory System</h1>
+        <p class="login-subtitle">Akses untuk Mahasiswa</p>
+        
+        <div class="input-group">
+            <label>Nama Lengkap</label>
+            <input type="text" id="loginNama" placeholder="Masukkan nama lengkap">
+        </div>
+        
+        <div class="input-group">
+            <label>NIM</label>
+            <input type="text" id="loginNim" placeholder="Masukkan NIM" inputmode="numeric">
+        </div>
+        
+        <button class="btn-login" onclick="handleLogin()">Login</button>
+        <div class="login-footer">
+            *Akun didaftarkan melalui Laboran
+        </div>
+    </div>
+</div>
+
+<!-- ========== MAIN APP (Dashboard) ========== -->
+<div id="appContainer" class="app-container">
+    <div class="app-header">
+        <h2 id="welcomeName">Selamat Datang,</h2>
+        <p id="welcomeNim">NIM: -</p>
+    </div>
+    
+    <div class="menu-grid">
+        <div class="menu-card" onclick="showPage('listPage')">
+            <div class="menu-icon">📦</div>
+            <div class="menu-title">Daftar Alat</div>
+            <div class="menu-desc">Lihat semua alat lab</div>
+        </div>
+        <div class="menu-card" onclick="showPage('historyPage')">
+            <div class="menu-icon">📋</div>
+            <div class="menu-title">Peminjaman</div>
+            <div class="menu-desc">Riwayat peminjaman</div>
+        </div>
+        <div class="menu-card" onclick="showPage('aturanPage')">
+            <div class="menu-icon">📜</div>
+            <div class="menu-title">Aturan Lab</div>
+            <div class="menu-desc">Tata tertib lab</div>
+        </div>
+    </div>
+    
+    <div class="info-card">
+        <div class="info-icon">ℹ️</div>
+        <div class="info-text">
+            <h4>Informasi</h4>
+            <p>Pastikan data diri Anda sudah benar sebelum melakukan peminjaman</p>
+        </div>
+    </div>
+    
+    <button class="btn-logout" onclick="logout()">LOGOUT</button>
+</div>
+
+<!-- ========== LIST BARANG PAGE ========== -->
+<div id="listPage" class="page">
+    <div class="page-header">
+        <button class="back-btn" onclick="showPage('dashboard')">←</button>
+        <h1>📦 Daftar Alat Lab</h1>
+    </div>
+    
+    <div class="sort-container">
+        <label>Urutkan:</label>
+        <select id="sortSelect" class="sort-select" onchange="applySortAndPagination()">
+            <option value="AZ">A-Z</option>
+            <option value="ZA">Z-A</option>
+            <option value="TERSEDIA">Tersedia Terlebih Dahulu</option>
+            <option value="DIPINJAM">Dipinjam Terlebih Dahulu</option>
+        </select>
+    </div>
+    
+    <div id="itemsList" class="items-list">
+        <div class="empty-state">Memuat data...</div>
+    </div>
+    
+    <div class="pagination">
+        <button id="prevBtn" class="page-btn" onclick="prevPage()">◀ Sebelumnya</button>
+        <span id="pageInfo" class="page-info">Halaman 1</span>
+        <button id="nextBtn" class="page-btn" onclick="nextPage()">Selanjutnya ▶</button>
+    </div>
+</div>
+
+<!-- ========== HISTORY PAGE ========== -->
+<div id="historyPage" class="page">
+    <div class="page-header">
+        <button class="back-btn" onclick="showPage('dashboard')">←</button>
+        <h1>📋 Riwayat Peminjaman</h1>
+    </div>
+    
+    <div id="historyList" class="items-list" style="padding: 16px;">
+        <div class="empty-state">Memuat riwayat...</div>
+    </div>
+</div>
+
+<!-- ========== ATURAN PAGE ========== -->
+<div id="aturanPage" class="page">
+    <div class="page-header">
+        <button class="back-btn" onclick="showPage('dashboard')">←</button>
+        <h1>📜 Aturan Laboratorium</h1>
+    </div>
+    
+    <div class="aturan-content">
+        <div class="aturan-card warning-card">
+            <div class="aturan-title">⚠️ PERINGATAN</div>
+            <div class="aturan-text">Kelalaian terhadap tata tertib dapat dikenakan sanksi sesuai ketentuan yang berlaku.</div>
+        </div>
+        
+        <div class="aturan-card">
+            <div class="aturan-title">1. Penggunaan Dalam Kampus</div>
+            <div class="aturan-text">Barang laboratorium hanya diperbolehkan digunakan di area kampus.</div>
+        </div>
+        
+        <div class="aturan-card">
+            <div class="aturan-title">2. Proses Peminjaman & Pengembalian</div>
+            <div class="aturan-text">Setiap mahasiswa diwajibkan melakukan identifikasi diri menggunakan KTM serta memindai alat/barang melalui sensor yang telah disediakan dalam setiap proses peminjaman dan pengembalian. Pastikan data mahasiswa dan alat/barang terverifikasi dengan akurat. Sistem akan secara otomatis mengirimkan notifikasi real-time pada aplikasi sebagai bukti transaksi.</div>
+        </div>
+        
+        <div class="aturan-card">
+            <div class="aturan-title">3. Durasi Peminjaman</div>
+            <div class="aturan-text">Peminjaman barang laboratorium disarankan untuk jangka waktu 1 hari. Jika memerlukan waktu lebih dari 1 hari, maka peminjam harus berkoordinasi terlebih dahulu dengan dosen pembimbing.</div>
+        </div>
+        
+        <div class="aturan-card">
+            <div class="aturan-title">4. Pengajuan Peminjaman Jangka Panjang</div>
+            <div class="aturan-text">Jika dosen pembimbing mengizinkan peminjaman jangka panjang, maka peminjam wajib mengirimkan email kepada kepala laboratorium (benedictus.rahardjo@binus.edu) dan cc kepala program untuk diketahui bersama-sama.</div>
+        </div>
+        
+        <div class="aturan-card">
+            <div class="aturan-title">5. Batas Maksimal Peminjaman</div>
+            <div class="aturan-text">Batas maksimal peminjaman barang laboratorium adalah 1 bulan.</div>
+        </div>
+        
+        <div class="aturan-card">
+            <div class="aturan-title">6. Perpanjangan Peminjaman</div>
+            <div class="aturan-text">Setelah 1 bulan, jika peminjam masih memerlukan barang yang dipinjam, maka peminjam perlu mengajukan permohonan ulang peminjaman dari proses awal.</div>
+        </div>
+        
+        <div class="aturan-card">
+            <div class="aturan-title">7. Pengembalian Barang Pinjaman</div>
+            <div class="aturan-text">Peminjam wajib mengembalikan barang yang dipinjam kepada laboran secara langsung.</div>
+        </div>
+        
+        <div class="aturan-card">
+            <div class="aturan-title">8. Tanggung Jawab atas Kerusakan atau Kehilangan</div>
+            <div class="aturan-text">Jika peminjam merusak atau menghilangkan barang laboratorium, peminjam wajib mengganti rugi senilai harga barang tersebut atau mengganti barang baru dengan tipe dan spesifikasi yang sama persis.</div>
+        </div>
+        
+        <div class="aturan-card">
+            <div class="aturan-text" style="font-style: italic; text-align: center;">Semua peminjam wajib mematuhi peraturan ini demi kelancaran dan keamanan penggunaan barang laboratorium. Terima kasih atas kerjasamanya.</div>
+            <div class="aturan-text" style="text-align: center; margin-top: 12px;">Tertanda,<br>Laboratorium</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ========== FIREBASE CONFIGURATION ==========
+    const FIREBASE_URL = "https://lab-inventory-smart-system-default-rtdb.asia-southeast1.firebasedatabase.app/";
+    
+    let currentUser = null;
+    let allItems = [];
+    let currentPage = 1;
+    const itemsPerPage = 10;
+    let currentSort = "AZ";
+    
+    // Helper function untuk fetch data dari Firebase
+    async function fetchData(path) {
+        const response = await fetch(`${FIREBASE_URL}${path}.json`);
+        return await response.json();
+    }
+    
+    // ========== LOGIN FUNCTION ==========
+    async function handleLogin() {
+        const nama = document.getElementById('loginNama').value.trim();
+        const nim = document.getElementById('loginNim').value.trim();
+        
+        if (!nama || !nim) {
+            alert('Harap isi Nama dan NIM!');
+            return;
+        }
+        
+        showLoading(true);
+        
+        try {
+            const students = await fetchData('students');
+            let found = false;
+            
+            for (const key in students) {
+                const student = students[key];
+                if (student.nim === nim && student.nama.toLowerCase() === nama.toLowerCase()) {
+                    found = true;
+                    currentUser = {
+                        nim: student.nim,
+                        nama: student.nama,
+                        key: key
+                    };
+                    break;
+                }
+            }
+            
+            if (found) {
+                // Simpan ke localStorage
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                
+                // Tampilkan di dashboard
+                document.getElementById('welcomeName').innerHTML = `Halo, ${currentUser.nama}!`;
+                document.getElementById('welcomeNim').innerHTML = `NIM: ${currentUser.nim}`;
+                
+                // Sembunyikan login, tampilkan dashboard
+                document.getElementById('loginPage').style.display = 'none';
+                document.getElementById('appContainer').style.display = 'block';
+                
+                // Load data
+                await loadItems();
+                await loadHistory();
+            } else {
+                alert('NIM atau Nama tidak ditemukan! Silakan hubungi laboran.');
+            }
+        } catch (error) {
+            console.error('Login error:', error);
+            alert('Gagal terhubung ke server. Periksa koneksi internet Anda.');
+        }
+        
+        showLoading(false);
+    }
+    
+    // ========== LOAD ITEMS ==========
+    async function loadItems() {
+        try {
+            const items = await fetchData('items');
+            allItems = [];
+            
+            for (const key in items) {
+                const item = items[key];
+                allItems.push({
+                    id: key,
+                    nama_barang: item.nama_barang || 'Tanpa Nama',
+                    status: item.status || 'tersedia'
+                });
+            }
+            
+            applySortAndPagination();
+        } catch (error) {
+            console.error('Load items error:', error);
+            document.getElementById('itemsList').innerHTML = '<div class="empty-state">Gagal memuat data barang</div>';
+        }
+    }
+    
+    function applySortAndPagination() {
+        currentSort = document.getElementById('sortSelect').value;
+        let sorted = [...allItems];
+        
+        switch(currentSort) {
+            case 'AZ':
+                sorted.sort((a, b) => (a.nama_barang || '').localeCompare(b.nama_barang || ''));
+                break;
+            case 'ZA':
+                sorted.sort((a, b) => (b.nama_barang || '').localeCompare(a.nama_barang || ''));
+                break;
+            case 'TERSEDIA':
+                sorted.sort((a, b) => {
+                    if (a.status === 'tersedia' && b.status !== 'tersedia') return -1;
+                    if (a.status !== 'tersedia' && b.status === 'tersedia') return 1;
+                    return (a.nama_barang || '').localeCompare(b.nama_barang || '');
+                });
+                break;
+            case 'DIPINJAM':
+                sorted.sort((a, b) => {
+                    if (a.status === 'dipinjam' && b.status !== 'dipinjam') return -1;
+                    if (a.status !== 'dipinjam' && b.status === 'dipinjam') return 1;
+                    return (a.nama_barang || '').localeCompare(b.nama_barang || '');
+                });
+                break;
+        }
+        
+        const totalPages = Math.ceil(sorted.length / itemsPerPage);
+        const start = (currentPage - 1) * itemsPerPage;
+        const paginated = sorted.slice(start, start + itemsPerPage);
+        
+        renderItems(paginated);
+        
+        document.getElementById('pageInfo').innerHTML = `Halaman ${currentPage} dari ${totalPages || 1}`;
+        document.getElementById('prevBtn').disabled = currentPage === 1;
+        document.getElementById('nextBtn').disabled = currentPage === totalPages || totalPages === 0;
+    }
+    
+    function renderItems(items) {
+        const container = document.getElementById('itemsList');
+        
+        if (items.length === 0) {
+            container.innerHTML = '<div class="empty-state">✨ Belum ada data barang ✨</div>';
+            return;
+        }
+        
+        container.innerHTML = items.map(item => `
+            <div class="item-card">
+                <div>
+                    <div class="item-name">${escapeHtml(item.nama_barang)}</div>
+                    <span class="item-status ${item.status === 'tersedia' ? 'status-tersedia' : 'status-dipinjam'}">
+                        ${item.status === 'tersedia' ? '🟢 Tersedia' : '🔴 Dipinjam'}
+                    </span>
+                </div>
+            </div>
+        `).join('');
+    }
+    
+    function prevPage() {
+        if (currentPage > 1) {
+            currentPage--;
+            applySortAndPagination();
+        }
+    }
+    
+    function nextPage() {
+        currentPage++;
+        applySortAndPagination();
+    }
+    
+    // ========== LOAD HISTORY ==========
+    async function loadHistory() {
+        if (!currentUser) return;
+        
+        try {
+            const transactions = await fetchData('transactions');
+            const userHistory = [];
+            
+            for (const key in transactions) {
+                const trans = transactions[key];
+                if (trans.nim === currentUser.nim) {
+                    userHistory.push({
+                        id: key,
+                        item_name: trans.item_name || 'Unknown',
+                        status: trans.status || 'unknown',
+                        waktu_pinjam: trans.waktu_pinjam || trans.created_at,
+                        waktu_kembali: trans.waktu_kembali
+                    });
+                }
+            }
+            
+            // Sort by newest first
+            userHistory.sort((a, b) => (b.waktu_pinjam || '').localeCompare(a.waktu_pinjam || ''));
+            
+            renderHistory(userHistory);
+        } catch (error) {
+            console.error('Load history error:', error);
+            document.getElementById('historyList').innerHTML = '<div class="empty-state">Gagal memuat riwayat</div>';
+        }
+    }
+    
+    function renderHistory(history) {
+        const container = document.getElementById('historyList');
+        
+        if (history.length === 0) {
+            container.innerHTML = '<div class="empty-state">✨ Belum ada riwayat peminjaman ✨</div>';
+            return;
+        }
+        
+        container.innerHTML = history.map(item => {
+            const statusText = item.status === 'active' ? '🟡 Sedang Dipinjam' : '✅ Selesai';
+            const statusColor = item.status === 'active' ? '#F57C00' : '#2E7D32';
+            const date = item.waktu_pinjam ? formatDate(item.waktu_pinjam) : '-';
+            
+            return `
+                <div class="history-item">
+                    <div class="history-item-name">${escapeHtml(item.item_name)}</div>
+                    <div class="history-date">📅 ${date}</div>
+                    <div class="history-status" style="color: ${statusColor}">${statusText}</div>
+                </div>
+            `;
+        }).join('');
+    }
+    
+    // ========== UTILITY FUNCTIONS ==========
+    function formatDate(dateString) {
+        try {
+            const cleanDate = dateString.replace('Z', '');
+            const date = new Date(cleanDate);
+            return date.toLocaleDateString('id-ID', {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        } catch {
+            return dateString;
+        }
+    }
+    
+    function escapeHtml(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+    
+    function showLoading(show) {
+        // Simple loading indicator
+        if (show) {
+            document.body.style.cursor = 'wait';
+        } else {
+            document.body.style.cursor = 'default';
+        }
+    }
+    
+    function showPage(pageName) {
+        // Sembunyikan semua page
+        document.getElementById('appContainer').style.display = 'none';
+        document.getElementById('listPage').style.display = 'none';
+        document.getElementById('historyPage').style.display = 'none';
+        document.getElementById('aturanPage').style.display = 'none';
+        
+        if (pageName === 'dashboard') {
+            document.getElementById('appContainer').style.display = 'block';
+            // Refresh data
+            loadItems();
+            loadHistory();
+        } else if (pageName === 'listPage') {
+            document.getElementById('listPage').style.display = 'block';
+            currentPage = 1;
+            applySortAndPagination();
+        } else if (pageName === 'historyPage') {
+            document.getElementById('historyPage').style.display = 'block';
+            loadHistory();
+        } else if (pageName === 'aturanPage') {
+            document.getElementById('aturanPage').style.display = 'block';
+        }
+    }
+    
+    function logout() {
+        currentUser = null;
+        localStorage.removeItem('currentUser');
+        document.getElementById('loginPage').style.display = 'flex';
+        document.getElementById('appContainer').style.display = 'none';
+        document.getElementById('loginNama').value = '';
+        document.getElementById('loginNim').value = '';
+    }
+    
+    // ========== CHECK SAVED LOGIN ==========
+    function checkSavedLogin() {
+        const savedUser = localStorage.getItem('currentUser');
+        if (savedUser) {
+            try {
+                currentUser = JSON.parse(savedUser);
+                document.getElementById('welcomeName').innerHTML = `Halo, ${currentUser.nama}!`;
+                document.getElementById('welcomeNim').innerHTML = `NIM: ${currentUser.nim}`;
+                document.getElementById('loginPage').style.display = 'none';
+                document.getElementById('appContainer').style.display = 'block';
+                loadItems();
+                loadHistory();
+            } catch(e) {
+                console.error('Error loading saved user:', e);
+            }
+        }
+    }
+    
+    // ========== INIT ==========
+    checkSavedLogin();
+</script>
+</body>
+</html>
