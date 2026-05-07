@@ -44,7 +44,7 @@
 
         .login-icon {
             text-align: center;
-            font-size: 48px;
+            font-size: 56px;
             margin-bottom: 16px;
         }
 
@@ -129,14 +129,28 @@
             padding: 20px;
             padding-top: 50px;
             color: white;
+            display: flex;
+            align-items: center;
+            gap: 16px;
         }
 
-        .app-header h2 {
+        .header-logo {
+            width: 60px;
+            height: 60px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+        }
+
+        .header-text h2 {
             font-size: 20px;
             margin-bottom: 4px;
         }
 
-        .app-header p {
+        .header-text p {
             font-size: 13px;
             opacity: 0.8;
         }
@@ -333,10 +347,11 @@
             background: #1976D2;
             color: white;
             border: none;
-            padding: 8px 16px;
-            border-radius: 8px;
+            padding: 10px 20px;
+            border-radius: 10px;
             cursor: pointer;
             font-size: 13px;
+            font-weight: 500;
         }
 
         .page-btn:disabled {
@@ -413,6 +428,26 @@
             border-left: 4px solid #F57C00;
             margin-bottom: 20px;
         }
+
+        /* Notification Toast */
+        .toast-notification {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            background: #333;
+            color: white;
+            padding: 12px 16px;
+            border-radius: 12px;
+            text-align: center;
+            z-index: 1000;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
     </style>
 </head>
 <body>
@@ -434,6 +469,11 @@
             <input type="text" id="loginNim" placeholder="Masukkan NIM" inputmode="numeric">
         </div>
         
+        <div class="input-group">
+            <label>Email</label>
+            <input type="email" id="loginEmail" placeholder="Masukkan email">
+        </div>
+        
         <button class="btn-login" onclick="handleLogin()">Login</button>
         <div class="login-footer">
             *Akun didaftarkan melalui Laboran
@@ -444,8 +484,11 @@
 <!-- ========== MAIN APP (Dashboard) ========== -->
 <div id="appContainer" class="app-container">
     <div class="app-header">
-        <h2 id="welcomeName">Selamat Datang,</h2>
-        <p id="welcomeNim">NIM: -</p>
+        <div class="header-logo">🔬</div>
+        <div class="header-text">
+            <h2 id="welcomeName">Selamat Datang,</h2>
+            <p id="welcomeNimEmail">NIM: - | Email: -</p>
+        </div>
     </div>
     
     <div class="menu-grid">
@@ -587,19 +630,32 @@
     const itemsPerPage = 10;
     let currentSort = "AZ";
     
+    // Untuk tracking notifikasi yang sudah ditampilkan
+    let notifiedTransactions = JSON.parse(localStorage.getItem('notifiedTransactions') || '{}');
+    
     // Helper function untuk fetch data dari Firebase
     async function fetchData(path) {
         const response = await fetch(`${FIREBASE_URL}${path}.json`);
         return await response.json();
     }
     
+    // Show Toast Notification
+    function showToast(message) {
+        const toast = document.createElement('div');
+        toast.className = 'toast-notification';
+        toast.innerHTML = message;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+    
     // ========== LOGIN FUNCTION ==========
     async function handleLogin() {
         const nama = document.getElementById('loginNama').value.trim();
         const nim = document.getElementById('loginNim').value.trim();
+        const email = document.getElementById('loginEmail').value.trim();
         
-        if (!nama || !nim) {
-            alert('Harap isi Nama dan NIM!');
+        if (!nama || !nim || !email) {
+            alert('Harap isi Nama, NIM, dan Email!');
             return;
         }
         
@@ -611,11 +667,14 @@
             
             for (const key in students) {
                 const student = students[key];
-                if (student.nim === nim && student.nama.toLowerCase() === nama.toLowerCase()) {
+                if (student.nim === nim && 
+                    student.nama.toLowerCase() === nama.toLowerCase() &&
+                    student.email === email) {
                     found = true;
                     currentUser = {
                         nim: student.nim,
                         nama: student.nama,
+                        email: student.email,
                         key: key
                     };
                     break;
@@ -627,8 +686,8 @@
                 localStorage.setItem('currentUser', JSON.stringify(currentUser));
                 
                 // Tampilkan di dashboard
-                document.getElementById('welcomeName').innerHTML = `Halo, ${currentUser.nama}!`;
-                document.getElementById('welcomeNim').innerHTML = `NIM: ${currentUser.nim}`;
+                document.getElementById('welcomeName').innerHTML = `Selamat Datang, ${currentUser.nama}!`;
+                document.getElementById('welcomeNimEmail').innerHTML = `NIM: ${currentUser.nim} | Email: ${currentUser.email}`;
                 
                 // Sembunyikan login, tampilkan dashboard
                 document.getElementById('loginPage').style.display = 'none';
@@ -637,8 +696,11 @@
                 // Load data
                 await loadItems();
                 await loadHistory();
+                
+                // Mulai listener realtime untuk notifikasi
+                startRealtimeListener();
             } else {
-                alert('NIM atau Nama tidak ditemukan! Silakan hubungi laboran.');
+                alert('NIM, Nama, atau Email tidak cocok! Silakan hubungi laboran.');
             }
         } catch (error) {
             console.error('Login error:', error);
@@ -646,6 +708,55 @@
         }
         
         showLoading(false);
+    }
+    
+    // ========== REALTIME NOTIFICATION LISTENER ==========
+    let lastNotifiedTime = {};
+    
+    function startRealtimeListener() {
+        // Listener untuk perubahan status barang
+        const eventSource = new EventSource(`${FIREBASE_URL}items.json`);
+        // Note: SSE tidak fully supported, kita pakai polling sederhana
+        setInterval(async () => {
+            if (!currentUser) return;
+            
+            try {
+                const transactions = await fetchData('transactions');
+                for (const key in transactions) {
+                    const trans = transactions[key];
+                    if (trans.nim === currentUser.nim) {
+                        const notifKey = `${key}_${trans.status}`;
+                        if (!notifiedTransactions[notifKey]) {
+                            if (trans.status === 'active') {
+                                showToast(`📋 Peminjaman Baru: Anda meminjam ${trans.item_name}`);
+                                showNotification(`📋 Peminjaman Baru`, `Anda telah meminjam ${trans.item_name}`);
+                                notifiedTransactions[notifKey] = true;
+                            } else if (trans.status === 'completed') {
+                                const pinjamKey = `${key}_active`;
+                                if (notifiedTransactions[pinjamKey]) {
+                                    showToast(`✅ Pengembalian Berhasil: ${trans.item_name} telah dikembalikan`);
+                                    showNotification(`✅ Pengembalian Berhasil`, `${trans.item_name} telah Anda kembalikan`);
+                                    notifiedTransactions[notifKey] = true;
+                                }
+                            }
+                        }
+                    }
+                }
+                localStorage.setItem('notifiedTransactions', JSON.stringify(notifiedTransactions));
+            } catch(e) {}
+        }, 3000);
+    }
+    
+    function showNotification(title, body) {
+        if (Notification.permission === 'granted') {
+            new Notification(title, { body, icon: '🔬' });
+        } else if (Notification.permission !== 'denied') {
+            Notification.requestPermission().then(permission => {
+                if (permission === 'granted') {
+                    new Notification(title, { body, icon: '🔬' });
+                }
+            });
+        }
     }
     
     // ========== LOAD ITEMS ==========
@@ -761,9 +872,7 @@
                 }
             }
             
-            // Sort by newest first
             userHistory.sort((a, b) => (b.waktu_pinjam || '').localeCompare(a.waktu_pinjam || ''));
-            
             renderHistory(userHistory);
         } catch (error) {
             console.error('Load history error:', error);
@@ -819,16 +928,10 @@
     }
     
     function showLoading(show) {
-        // Simple loading indicator
-        if (show) {
-            document.body.style.cursor = 'wait';
-        } else {
-            document.body.style.cursor = 'default';
-        }
+        document.body.style.cursor = show ? 'wait' : 'default';
     }
     
     function showPage(pageName) {
-        // Sembunyikan semua page
         document.getElementById('appContainer').style.display = 'none';
         document.getElementById('listPage').style.display = 'none';
         document.getElementById('historyPage').style.display = 'none';
@@ -836,7 +939,6 @@
         
         if (pageName === 'dashboard') {
             document.getElementById('appContainer').style.display = 'block';
-            // Refresh data
             loadItems();
             loadHistory();
         } else if (pageName === 'listPage') {
@@ -858,6 +960,7 @@
         document.getElementById('appContainer').style.display = 'none';
         document.getElementById('loginNama').value = '';
         document.getElementById('loginNim').value = '';
+        document.getElementById('loginEmail').value = '';
     }
     
     // ========== CHECK SAVED LOGIN ==========
@@ -866,16 +969,22 @@
         if (savedUser) {
             try {
                 currentUser = JSON.parse(savedUser);
-                document.getElementById('welcomeName').innerHTML = `Halo, ${currentUser.nama}!`;
-                document.getElementById('welcomeNim').innerHTML = `NIM: ${currentUser.nim}`;
+                document.getElementById('welcomeName').innerHTML = `Selamat Datang, ${currentUser.nama}!`;
+                document.getElementById('welcomeNimEmail').innerHTML = `NIM: ${currentUser.nim} | Email: ${currentUser.email}`;
                 document.getElementById('loginPage').style.display = 'none';
                 document.getElementById('appContainer').style.display = 'block';
                 loadItems();
                 loadHistory();
+                startRealtimeListener();
             } catch(e) {
                 console.error('Error loading saved user:', e);
             }
         }
+    }
+    
+    // Minta izin notifikasi browser
+    if ('Notification' in window && Notification.permission !== 'granted' && Notification.permission !== 'denied') {
+        Notification.requestPermission();
     }
     
     // ========== INIT ==========
