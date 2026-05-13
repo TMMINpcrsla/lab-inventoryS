@@ -94,10 +94,16 @@
 
         /* Toast */
         .toast { position: fixed; bottom: 20px; left: 20px; right: 20px; background: #333; color: white; padding: 12px; border-radius: 12px; text-align: center; z-index: 1100; animation: fadeInUp 0.3s ease; }
+        .loading { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 1200; }
+        .loading-spinner { width: 50px; height: 50px; border: 5px solid white; border-top-color: #1976D2; border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
         @keyframes fadeInUp { from { transform: translateY(100px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
     </style>
 </head>
 <body>
+
+<!-- LOADING -->
+<div id="loadingOverlay" style="display:none;" class="loading"><div class="loading-spinner"></div></div>
 
 <!-- LOGIN PAGE -->
 <div id="loginPage" class="login-container">
@@ -178,18 +184,29 @@
     const itemsPerPage = 10;
     let currentSort = "AZ";
 
-    async function fetchData(path) { const res = await fetch(`${FIREBASE_URL}${path}.json`); return await res.json(); }
+    function showLoading(show) { document.getElementById('loadingOverlay').style.display = show ? 'flex' : 'none'; }
     function showToast(msg) { const t = document.createElement('div'); t.className = 'toast'; t.innerText = msg; document.body.appendChild(t); setTimeout(() => t.remove(), 3000); }
     function escapeHtml(t) { if (!t) return ''; const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
     function formatDate(ds) { try { const d = new Date(ds); return d.toLocaleDateString('id-ID', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' }); } catch(e) { return ds; } }
-    function showLoading(s) { document.body.style.cursor = s ? 'wait' : 'default'; }
 
-    // LOGIN dengan BCrypt
+    async function fetchData(path) {
+        try {
+            const res = await fetch(`${FIREBASE_URL}${path}.json`);
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            return await res.json();
+        } catch(e) {
+            console.error(`Fetch error for ${path}:`, e);
+            throw e;
+        }
+    }
+
+    // LOGIN
     async function handleLogin() {
         const nama = document.getElementById('loginNama').value.trim();
         const nim = document.getElementById('loginNim').value.trim();
         const password = document.getElementById('loginPassword').value.trim();
         if (!nama || !nim || !password) { showToast('Harap isi semua field!'); return; }
+        
         showLoading(true);
         try {
             const students = await fetchData('students');
@@ -198,10 +215,17 @@
                 const s = students[key];
                 if (s.nim === nim && s.nama.toLowerCase() === nama.toLowerCase()) {
                     const hash = s.password_hash;
+                    let match = false;
                     if (hash && hash.startsWith('$2a$')) {
-                        const match = bcrypt.compareSync(password, hash);
-                        if (match) { found = true; currentUser = { nim: s.nim, nama: s.nama, email: s.email, key: key }; break; }
-                    } else if (hash === password) { found = true; currentUser = { nim: s.nim, nama: s.nama, email: s.email, key: key }; break; }
+                        match = bcrypt.compareSync(password, hash);
+                    } else {
+                        match = (hash === password);
+                    }
+                    if (match) {
+                        found = true;
+                        currentUser = { nim: s.nim, nama: s.nama, email: s.email, key: key };
+                        break;
+                    }
                 }
             }
             if (found) {
@@ -210,13 +234,20 @@
                 document.getElementById('welcomeNim').innerHTML = `NIM: ${currentUser.nim}`;
                 document.getElementById('loginPage').style.display = 'none';
                 document.getElementById('appContainer').style.display = 'block';
-                await loadItems(); await loadHistory();
-            } else { showToast('Nama, NIM, atau Password salah!'); }
-        } catch(e) { console.error(e); showToast('Gagal terhubung ke server'); }
+                await loadItems();
+                await loadHistory();
+                showToast(`Selamat datang ${currentUser.nama}!`);
+            } else {
+                showToast('Nama, NIM, atau Password salah!');
+            }
+        } catch(e) {
+            console.error(e);
+            showToast('Gagal terhubung ke server. Periksa koneksi internet Anda.');
+        }
         showLoading(false);
     }
 
-    // CHANGE PASSWORD dengan BCrypt
+    // CHANGE PASSWORD
     async function changePassword() {
         const nim = document.getElementById('modalNim').value.trim();
         const oldPassword = document.getElementById('modalOldPassword').value.trim();
@@ -225,6 +256,8 @@
         if (!nim || !oldPassword || !newPassword) { showToast('Harap isi semua field!'); return; }
         if (newPassword !== confirmPassword) { showToast('Password baru tidak cocok!'); return; }
         if (newPassword.length < 4) { showToast('Password minimal 4 karakter!'); return; }
+        
+        showLoading(true);
         try {
             const students = await fetchData('students');
             let found = false, studentId = null;
@@ -238,17 +271,23 @@
                     if (valid) { found = true; studentId = key; break; }
                 }
             }
-            if (!found) { showToast('NIM atau Password lama salah!'); return; }
+            if (!found) { showToast('NIM atau Password lama salah!'); showLoading(false); return; }
             const salt = bcrypt.genSaltSync(8);
             const newHash = bcrypt.hashSync(newPassword, salt);
             const res = await fetch(`${FIREBASE_URL}students/${studentId}.json`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password_hash: newHash }) });
-            if (res.ok) { showToast('Password berhasil diubah! Silakan login dengan password baru.'); closeChangePasswordModal(); if (currentUser && currentUser.nim === nim) logout(); }
-            else { showToast('Gagal mengubah password'); }
+            if (res.ok) {
+                showToast('Password berhasil diubah! Silakan login dengan password baru.');
+                closeChangePasswordModal();
+                if (currentUser && currentUser.nim === nim) logout();
+            } else {
+                showToast('Gagal mengubah password');
+            }
         } catch(e) { console.error(e); showToast('Error: ' + e.message); }
+        showLoading(false);
     }
 
     function openChangePasswordModal() { document.getElementById('changePasswordModal').style.display = 'flex'; if(currentUser) document.getElementById('modalNim').value = currentUser.nim; }
-    function closeChangePasswordModal() { document.getElementById('changePasswordModal').style.display = 'none'; }
+    function closeChangePasswordModal() { document.getElementById('changePasswordModal').style.display = 'none'; document.getElementById('modalNim').value = ''; document.getElementById('modalOldPassword').value = ''; document.getElementById('modalNewPassword').value = ''; document.getElementById('modalConfirmPassword').value = ''; }
 
     // LOAD ITEMS
     async function loadItems() {
@@ -275,8 +314,8 @@
         const start = (currentPage-1)*itemsPerPage;
         const paginated = sorted.slice(start, start+itemsPerPage);
         const container = document.getElementById('itemsList');
-        if(paginated.length===0) { container.innerHTML = '<div class="empty-state">✨ Belum ada data barang ✨</div>'; }
-        else { container.innerHTML = paginated.map(item => { let cls='status-tersedia', txt='🟢 Tersedia'; if(item.status==='dipinjam'){ cls='status-dipinjam'; txt='🔴 Dipinjam'; } else if(item.status==='rusak'){ cls='status-rusak'; txt='⚠️ Rusak'; } return `<div class="item-card"><div class="item-name">${escapeHtml(item.nama_barang)}</div><span class="item-status ${cls}">${txt}</span></div>`; }).join(''); }
+        if(paginated.length===0) container.innerHTML = '<div class="empty-state">✨ Belum ada data barang ✨</div>';
+        else container.innerHTML = paginated.map(item => { let cls='status-tersedia', txt='🟢 Tersedia'; if(item.status==='dipinjam'){ cls='status-dipinjam'; txt='🔴 Dipinjam'; } else if(item.status==='rusak'){ cls='status-rusak'; txt='⚠️ Rusak'; } return `<div class="item-card"><div class="item-name">${escapeHtml(item.nama_barang)}</div><span class="item-status ${cls}">${txt}</span></div>`; }).join('');
         document.getElementById('pageInfo').innerHTML = `Halaman ${currentPage} dari ${total||1}`;
         document.getElementById('prevBtn').disabled = currentPage===1;
         document.getElementById('nextBtn').disabled = currentPage===total || total===0;
@@ -299,7 +338,10 @@
     }
 
     function showPage(p) {
-        document.getElementById('appContainer').style.display='none'; document.getElementById('listPage').style.display='none'; document.getElementById('historyPage').style.display='none'; document.getElementById('aturanPage').style.display='none';
+        document.getElementById('appContainer').style.display='none';
+        document.getElementById('listPage').style.display='none';
+        document.getElementById('historyPage').style.display='none';
+        document.getElementById('aturanPage').style.display='none';
         if(p==='dashboard'){ document.getElementById('appContainer').style.display='block'; loadItems(); loadHistory(); }
         else if(p==='listPage'){ document.getElementById('listPage').style.display='block'; currentPage=1; applySortAndPagination(); }
         else if(p==='historyPage'){ document.getElementById('historyPage').style.display='block'; loadHistory(); }
@@ -309,7 +351,17 @@
     function logout() { currentUser=null; localStorage.removeItem('currentUser'); document.getElementById('loginPage').style.display='flex'; document.getElementById('appContainer').style.display='none'; document.getElementById('loginNama').value=''; document.getElementById('loginNim').value=''; document.getElementById('loginPassword').value=''; }
 
     const saved = localStorage.getItem('currentUser');
-    if(saved) { try { currentUser = JSON.parse(saved); document.getElementById('welcomeName').innerHTML = `Halo, ${currentUser.nama}!`; document.getElementById('welcomeNim').innerHTML = `NIM: ${currentUser.nim}`; document.getElementById('loginPage').style.display = 'none'; document.getElementById('appContainer').style.display = 'block'; loadItems(); loadHistory(); } catch(e){} }
+    if(saved) {
+        try {
+            currentUser = JSON.parse(saved);
+            document.getElementById('welcomeName').innerHTML = `Halo, ${currentUser.nama}!`;
+            document.getElementById('welcomeNim').innerHTML = `NIM: ${currentUser.nim}`;
+            document.getElementById('loginPage').style.display = 'none';
+            document.getElementById('appContainer').style.display = 'block';
+            loadItems();
+            loadHistory();
+        } catch(e) { console.error(e); }
+    }
 </script>
 </body>
 </html>
