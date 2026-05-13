@@ -8,8 +8,8 @@
     <meta name="apple-mobile-web-app-title" content="Lab Inventory">
     <meta name="theme-color" content="#1976D2">
     <title>Lab Inventory - Mahasiswa</title>
-    <!-- bcryptjs library -->
-    <script src="https://cdn.jsdelivr.net/npm/bcryptjs@2.4.3/bcrypt.min.js"></script>
+    <!-- bcryptjs library from cdnjs (lebih stabil) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bcryptjs/2.4.3/bcrypt.min.js"></script>
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
@@ -195,18 +195,18 @@
     function extractNumber(str) { const m = str.match(/\d+/); return m ? parseInt(m[0]) : 0; }
     function extractBaseName(str) { return str.replace(/\s\d+$/, '').trim(); }
 
-    // cek apakah bcrypt sudah siap
-    let bcryptReady = false;
+    // Fungsi untuk menunggu bcrypt siap
     function waitForBcrypt() {
         return new Promise((resolve) => {
             if (typeof bcrypt !== 'undefined') {
-                bcryptReady = true;
+                console.log('bcrypt already loaded');
                 resolve();
             } else {
+                console.log('waiting for bcrypt...');
                 const check = setInterval(() => {
                     if (typeof bcrypt !== 'undefined') {
                         clearInterval(check);
-                        bcryptReady = true;
+                        console.log('bcrypt loaded');
                         resolve();
                     }
                 }, 100);
