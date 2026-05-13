@@ -47,7 +47,6 @@
         .info-text h4 { font-size: 13px; margin-bottom: 4px; }
         .info-text p { font-size: 11px; color: #666; }
         .btn-logout { margin: 0 20px 30px 20px; padding: 14px; background: #EF4444; color: white; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; width: calc(100% - 40px); }
-        .btn-change-password { margin: 0 20px 16px 20px; padding: 12px; background: transparent; color: #1976D2; border: 1px solid #1976D2; border-radius: 12px; font-weight: 500; cursor: pointer; width: calc(100% - 40px); }
 
         .page { display: none; min-height: 100vh; background: #F5F7FA; }
         .page-header { background: #1976D2; padding: 20px; padding-top: 50px; display: flex; align-items: center; gap: 16px; }
@@ -110,7 +109,7 @@
         <div class="input-group"><label>Password</label><input type="password" id="loginPassword" placeholder="Masukkan password"></div>
         <button class="btn-login" onclick="handleLogin()">Login</button>
         <button class="btn-secondary" onclick="openChangePasswordModal()">Lupa / Ganti Password</button>
-        <div class="login-footer">*Akun didaftarkan melalui Laboran</div>
+        <div class="login-footer">*Akun didaftarkan melalui Laboran | Password awal = NIM</div>
     </div>
 </div>
 
@@ -126,7 +125,7 @@
     </div>
 </div>
 
-<!-- DASHBOARD -->
+<!-- DASHBOARD (Tanpa Tombol Ganti Password) -->
 <div id="appContainer" class="app-container">
     <div class="app-header"><h2 id="welcomeName">Selamat Datang,</h2><p id="welcomeNim">NIM: -</p></div>
     <div class="menu-grid">
@@ -134,7 +133,6 @@
         <div class="menu-card" onclick="showPage('historyPage')"><div class="menu-icon">📋</div><div class="menu-title">Peminjaman</div><div class="menu-desc">Riwayat peminjaman</div></div>
         <div class="menu-card" onclick="showPage('aturanPage')"><div class="menu-icon">📜</div><div class="menu-title">Aturan Lab</div><div class="menu-desc">Tata tertib lab</div></div>
     </div>
-    <button class="btn-change-password" onclick="openChangePasswordModal()">🔐 Ganti Password</button>
     <div class="info-card"><div class="info-icon">ℹ️</div><div class="info-text"><h4>Informasi</h4><p>Pastikan data diri Anda sudah benar sebelum melakukan peminjaman</p></div></div>
     <button class="btn-logout" onclick="logout()">LOGOUT</button>
 </div>
@@ -186,7 +184,7 @@
     const itemsPerPage = 10;
     let currentSort = "AZ";
 
-    // 🔐 FUNGSI SHA-256 (Built-in browser, tanpa library)
+    // 🔐 SHA-256 Hash Function (Built-in browser)
     async function sha256(message) {
         const encoder = new TextEncoder();
         const data = encoder.encode(message);
@@ -213,7 +211,6 @@
         showLoading(true);
         
         try {
-            // Hash password yang dimasukkan
             const hashedPassword = await sha256(password);
             
             const snapshot = await database.ref('students').orderByChild('nim').equalTo(nim).once('value');
@@ -222,7 +219,6 @@
                 const s = child.val();
                 if (s.nim === nim && s.nama.toLowerCase() === nama.toLowerCase()) {
                     const hashDb = s.password_hash;
-                    // Bandingkan hash
                     if (hashDb === hashedPassword) {
                         found = true;
                         currentUser = { nim: s.nim, nama: s.nama, email: s.email, key: child.key };
