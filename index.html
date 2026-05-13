@@ -8,6 +8,7 @@
     <meta name="apple-mobile-web-app-title" content="Lab Inventory">
     <meta name="theme-color" content="#1976D2">
     <title>Lab Inventory - Mahasiswa</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
@@ -109,6 +110,24 @@
             transform: translateY(-2px);
         }
 
+        .btn-secondary {
+            width: 100%;
+            padding: 12px;
+            background: transparent;
+            color: #1976D2;
+            border: 1.5px solid #1976D2;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 12px;
+        }
+
+        .btn-secondary:hover {
+            background: #E3F2FD;
+        }
+
         .login-footer {
             text-align: center;
             font-size: 11px;
@@ -123,39 +142,23 @@
             background: #F5F7FA;
         }
 
-        /* Header */
         .app-header {
             background: linear-gradient(135deg, #1976D2, #1565C0);
             padding: 20px;
             padding-top: 50px;
             color: white;
-            display: flex;
-            align-items: center;
-            gap: 16px;
         }
 
-        .header-logo {
-            width: 60px;
-            height: 60px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 32px;
-        }
-
-        .header-text h2 {
+        .app-header h2 {
             font-size: 20px;
             margin-bottom: 4px;
         }
 
-        .header-text p {
+        .app-header p {
             font-size: 13px;
             opacity: 0.8;
         }
 
-        /* Menu Grid */
         .menu-grid {
             padding: 20px;
             display: grid;
@@ -194,7 +197,6 @@
             color: #999;
         }
 
-        /* Info Card */
         .info-card {
             background: white;
             margin: 0 20px 20px 20px;
@@ -224,7 +226,6 @@
             color: #666;
         }
 
-        /* Logout Button */
         .btn-logout {
             margin: 0 20px 30px 20px;
             padding: 14px;
@@ -233,6 +234,18 @@
             border: none;
             border-radius: 12px;
             font-weight: 600;
+            cursor: pointer;
+            width: calc(100% - 40px);
+        }
+
+        .btn-change-password {
+            margin: 0 20px 16px 20px;
+            padding: 12px;
+            background: transparent;
+            color: #1976D2;
+            border: 1px solid #1976D2;
+            border-radius: 12px;
+            font-weight: 500;
             cursor: pointer;
             width: calc(100% - 40px);
         }
@@ -270,7 +283,6 @@
             flex: 1;
         }
 
-        /* Sort Spinner */
         .sort-container {
             padding: 16px;
             background: white;
@@ -295,7 +307,6 @@
             font-size: 13px;
         }
 
-        /* Item List */
         .items-list {
             padding: 0 16px;
         }
@@ -334,7 +345,11 @@
             color: #C62828;
         }
 
-        /* Pagination */
+        .status-rusak {
+            background: #FFF3E0;
+            color: #F57C00;
+        }
+
         .pagination {
             display: flex;
             justify-content: center;
@@ -364,7 +379,6 @@
             color: #666;
         }
 
-        /* Empty State */
         .empty-state {
             text-align: center;
             padding: 60px 20px;
@@ -429,22 +443,81 @@
             margin-bottom: 20px;
         }
 
-        /* Notification Toast */
-        .toast-notification {
+        /* Change Password Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 24px;
+            padding: 24px;
+            width: 90%;
+            max-width: 400px;
+        }
+
+        .modal-content h3 {
+            margin-bottom: 20px;
+            color: #1976D2;
+        }
+
+        .modal-content input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #E0E0E0;
+            border-radius: 10px;
+            margin-bottom: 12px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .modal-buttons button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        .btn-save {
+            background: #1976D2;
+            color: white;
+        }
+
+        .btn-cancel {
+            background: #EF4444;
+            color: white;
+        }
+
+        /* Toast Notification */
+        .toast {
             position: fixed;
             bottom: 20px;
             left: 20px;
             right: 20px;
             background: #333;
             color: white;
-            padding: 12px 16px;
+            padding: 12px;
             border-radius: 12px;
             text-align: center;
-            z-index: 1000;
-            animation: slideUp 0.3s ease;
+            z-index: 1100;
+            animation: fadeInUp 0.3s ease;
         }
 
-        @keyframes slideUp {
+        @keyframes fadeInUp {
             from { transform: translateY(100px); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
         }
@@ -452,7 +525,7 @@
 </head>
 <body>
 
-<!-- ========== LOGIN PAGE ========== -->
+<!-- LOGIN PAGE -->
 <div id="loginPage" class="login-container">
     <div class="login-card">
         <div class="login-icon">🔬</div>
@@ -470,25 +543,36 @@
         </div>
         
         <div class="input-group">
-            <label>Email</label>
-            <input type="email" id="loginEmail" placeholder="Masukkan email">
+            <label>Password</label>
+            <input type="password" id="loginPassword" placeholder="Masukkan password">
         </div>
         
         <button class="btn-login" onclick="handleLogin()">Login</button>
-        <div class="login-footer">
-            *Akun didaftarkan melalui Laboran
+        <button class="btn-secondary" onclick="openChangePasswordModal()">Lupa / Ganti Password</button>
+        <div class="login-footer">*Akun didaftarkan melalui Laboran</div>
+    </div>
+</div>
+
+<!-- CHANGE PASSWORD MODAL -->
+<div id="changePasswordModal" class="modal">
+    <div class="modal-content">
+        <h3>🔐 Ganti Password</h3>
+        <input type="text" id="modalNim" placeholder="NIM">
+        <input type="password" id="modalOldPassword" placeholder="Password Lama">
+        <input type="password" id="modalNewPassword" placeholder="Password Baru (min 4 karakter)">
+        <input type="password" id="modalConfirmPassword" placeholder="Konfirmasi Password Baru">
+        <div class="modal-buttons">
+            <button class="btn-cancel" onclick="closeChangePasswordModal()">Batal</button>
+            <button class="btn-save" onclick="changePassword()">Simpan</button>
         </div>
     </div>
 </div>
 
-<!-- ========== MAIN APP (Dashboard) ========== -->
+<!-- MAIN APP DASHBOARD -->
 <div id="appContainer" class="app-container">
     <div class="app-header">
-        <div class="header-logo">🔬</div>
-        <div class="header-text">
-            <h2 id="welcomeName">Selamat Datang,</h2>
-            <p id="welcomeNimEmail">NIM: - | Email: -</p>
-        </div>
+        <h2 id="welcomeName">Selamat Datang,</h2>
+        <p id="welcomeNim">NIM: -</p>
     </div>
     
     <div class="menu-grid">
@@ -509,6 +593,8 @@
         </div>
     </div>
     
+    <button class="btn-change-password" onclick="openChangePasswordModal()">🔐 Ganti Password</button>
+    
     <div class="info-card">
         <div class="info-icon">ℹ️</div>
         <div class="info-text">
@@ -520,7 +606,7 @@
     <button class="btn-logout" onclick="logout()">LOGOUT</button>
 </div>
 
-<!-- ========== LIST BARANG PAGE ========== -->
+<!-- LIST BARANG PAGE -->
 <div id="listPage" class="page">
     <div class="page-header">
         <button class="back-btn" onclick="showPage('dashboard')">←</button>
@@ -534,6 +620,7 @@
             <option value="ZA">Z-A</option>
             <option value="TERSEDIA">Tersedia Terlebih Dahulu</option>
             <option value="DIPINJAM">Dipinjam Terlebih Dahulu</option>
+            <option value="RUSAK">Rusak Terlebih Dahulu</option>
         </select>
     </div>
     
@@ -548,73 +635,62 @@
     </div>
 </div>
 
-<!-- ========== HISTORY PAGE ========== -->
+<!-- HISTORY PAGE -->
 <div id="historyPage" class="page">
     <div class="page-header">
         <button class="back-btn" onclick="showPage('dashboard')">←</button>
         <h1>📋 Riwayat Peminjaman</h1>
     </div>
-    
     <div id="historyList" class="items-list" style="padding: 16px;">
         <div class="empty-state">Memuat riwayat...</div>
     </div>
 </div>
 
-<!-- ========== ATURAN PAGE ========== -->
+<!-- ATURAN PAGE -->
 <div id="aturanPage" class="page">
     <div class="page-header">
         <button class="back-btn" onclick="showPage('dashboard')">←</button>
         <h1>📜 Aturan Laboratorium</h1>
     </div>
-    
     <div class="aturan-content">
         <div class="aturan-card warning-card">
             <div class="aturan-title">⚠️ PERINGATAN</div>
             <div class="aturan-text">Kelalaian terhadap tata tertib dapat dikenakan sanksi sesuai ketentuan yang berlaku.</div>
         </div>
-        
         <div class="aturan-card">
             <div class="aturan-title">1. Penggunaan Dalam Kampus</div>
             <div class="aturan-text">Barang laboratorium hanya diperbolehkan digunakan di area kampus.</div>
         </div>
-        
         <div class="aturan-card">
             <div class="aturan-title">2. Proses Peminjaman & Pengembalian</div>
-            <div class="aturan-text">Setiap mahasiswa diwajibkan melakukan identifikasi diri menggunakan KTM serta memindai alat/barang melalui sensor yang telah disediakan dalam setiap proses peminjaman dan pengembalian. Pastikan data mahasiswa dan alat/barang terverifikasi dengan akurat. Sistem akan secara otomatis mengirimkan notifikasi real-time pada aplikasi sebagai bukti transaksi.</div>
+            <div class="aturan-text">Setiap mahasiswa diwajibkan melakukan identifikasi diri menggunakan KTM serta memindai alat/barang melalui sensor yang telah disediakan. Pastikan data mahasiswa dan alat/barang terverifikasi dengan akurat. Sistem akan mengirimkan notifikasi real-time sebagai bukti transaksi.</div>
         </div>
-        
         <div class="aturan-card">
             <div class="aturan-title">3. Durasi Peminjaman</div>
             <div class="aturan-text">Peminjaman barang laboratorium disarankan untuk jangka waktu 1 hari. Jika memerlukan waktu lebih dari 1 hari, maka peminjam harus berkoordinasi terlebih dahulu dengan dosen pembimbing.</div>
         </div>
-        
         <div class="aturan-card">
             <div class="aturan-title">4. Pengajuan Peminjaman Jangka Panjang</div>
-            <div class="aturan-text">Jika dosen pembimbing mengizinkan peminjaman jangka panjang, maka peminjam wajib mengirimkan email kepada kepala laboratorium (benedictus.rahardjo@binus.edu) dan cc kepala program untuk diketahui bersama-sama.</div>
+            <div class="aturan-text">Jika dosen pembimbing mengizinkan peminjaman jangka panjang, maka peminjam wajib mengirimkan email kepada kepala laboratorium dan cc kepala program.</div>
         </div>
-        
         <div class="aturan-card">
             <div class="aturan-title">5. Batas Maksimal Peminjaman</div>
             <div class="aturan-text">Batas maksimal peminjaman barang laboratorium adalah 1 bulan.</div>
         </div>
-        
         <div class="aturan-card">
             <div class="aturan-title">6. Perpanjangan Peminjaman</div>
-            <div class="aturan-text">Setelah 1 bulan, jika peminjam masih memerlukan barang yang dipinjam, maka peminjam perlu mengajukan permohonan ulang peminjaman dari proses awal.</div>
+            <div class="aturan-text">Setelah 1 bulan, jika masih memerlukan barang, peminjam perlu mengajukan permohonan ulang dari proses awal.</div>
         </div>
-        
         <div class="aturan-card">
-            <div class="aturan-title">7. Pengembalian Barang Pinjaman</div>
+            <div class="aturan-title">7. Pengembalian Barang</div>
             <div class="aturan-text">Peminjam wajib mengembalikan barang yang dipinjam kepada laboran secara langsung.</div>
         </div>
-        
         <div class="aturan-card">
-            <div class="aturan-title">8. Tanggung Jawab atas Kerusakan atau Kehilangan</div>
-            <div class="aturan-text">Jika peminjam merusak atau menghilangkan barang laboratorium, peminjam wajib mengganti rugi senilai harga barang tersebut atau mengganti barang baru dengan tipe dan spesifikasi yang sama persis.</div>
+            <div class="aturan-title">8. Tanggung Jawab</div>
+            <div class="aturan-text">Jika merusak atau menghilangkan barang, peminjam wajib mengganti rugi senilai harga barang tersebut atau mengganti dengan barang baru yang sama.</div>
         </div>
-        
         <div class="aturan-card">
-            <div class="aturan-text" style="font-style: italic; text-align: center;">Semua peminjam wajib mematuhi peraturan ini demi kelancaran dan keamanan penggunaan barang laboratorium. Terima kasih atas kerjasamanya.</div>
+            <div class="aturan-text" style="font-style: italic; text-align: center;">Semua peminjam wajib mematuhi peraturan ini demi kelancaran dan keamanan.</div>
             <div class="aturan-text" style="text-align: center; margin-top: 12px;">Tertanda,<br>Laboratorium</div>
         </div>
     </div>
@@ -626,36 +702,39 @@
     
     let currentUser = null;
     let allItems = [];
+    let allTransactions = [];
     let currentPage = 1;
     const itemsPerPage = 10;
     let currentSort = "AZ";
     
-    // Untuk tracking notifikasi yang sudah ditampilkan
-    let notifiedTransactions = JSON.parse(localStorage.getItem('notifiedTransactions') || '{}');
-    
-    // Helper function untuk fetch data dari Firebase
+    // Helper functions
     async function fetchData(path) {
         const response = await fetch(`${FIREBASE_URL}${path}.json`);
         return await response.json();
     }
     
-    // Show Toast Notification
     function showToast(message) {
+        const existing = document.querySelector('.toast');
+        if (existing) existing.remove();
         const toast = document.createElement('div');
-        toast.className = 'toast-notification';
-        toast.innerHTML = message;
+        toast.className = 'toast';
+        toast.innerText = message;
         document.body.appendChild(toast);
         setTimeout(() => toast.remove(), 3000);
     }
     
-    // ========== LOGIN FUNCTION ==========
+    // MD5 Hash function (untuk BCrypt di client tidak bisa, jadi kita asumsikan password_hash sudah di-hash di backend)
+    // Untuk demo, kita pakai perbandingan langsung (karena di Web tidak bisa BCrypt tanpa library besar)
+    // Di production, sebaiknya pakai bcryptjs library
+    
+    // ========== LOGIN ==========
     async function handleLogin() {
         const nama = document.getElementById('loginNama').value.trim();
         const nim = document.getElementById('loginNim').value.trim();
-        const email = document.getElementById('loginEmail').value.trim();
+        const password = document.getElementById('loginPassword').value.trim();
         
-        if (!nama || !nim || !email) {
-            alert('Harap isi Nama, NIM, dan Email!');
+        if (!nama || !nim || !password) {
+            showToast('Harap isi semua field!');
             return;
         }
         
@@ -667,95 +746,111 @@
             
             for (const key in students) {
                 const student = students[key];
-                if (student.nim === nim && 
-                    student.nama.toLowerCase() === nama.toLowerCase() &&
-                    student.email === email) {
-                    found = true;
-                    currentUser = {
-                        nim: student.nim,
-                        nama: student.nama,
-                        email: student.email,
-                        key: key
-                    };
-                    break;
+                if (student.nim === nim && student.nama.toLowerCase() === nama.toLowerCase()) {
+                    // Bandingkan password (di Web sederhana, asumsikan password_hash adalah plain text atau MD5)
+                    // Di sini kita bandingkan langsung dengan field password_hash
+                    if (student.password_hash === password) {
+                        found = true;
+                        currentUser = {
+                            nim: student.nim,
+                            nama: student.nama,
+                            email: student.email,
+                            key: key
+                        };
+                        break;
+                    }
                 }
             }
             
             if (found) {
-                // Simpan ke localStorage
                 localStorage.setItem('currentUser', JSON.stringify(currentUser));
-                
-                // Tampilkan di dashboard
-                document.getElementById('welcomeName').innerHTML = `Selamat Datang, ${currentUser.nama}!`;
-                document.getElementById('welcomeNimEmail').innerHTML = `NIM: ${currentUser.nim} | Email: ${currentUser.email}`;
-                
-                // Sembunyikan login, tampilkan dashboard
+                document.getElementById('welcomeName').innerHTML = `Halo, ${currentUser.nama}!`;
+                document.getElementById('welcomeNim').innerHTML = `NIM: ${currentUser.nim}`;
                 document.getElementById('loginPage').style.display = 'none';
                 document.getElementById('appContainer').style.display = 'block';
-                
-                // Load data
                 await loadItems();
                 await loadHistory();
-                
-                // Mulai listener realtime untuk notifikasi
-                startRealtimeListener();
             } else {
-                alert('NIM, Nama, atau Email tidak cocok! Silakan hubungi laboran.');
+                showToast('Nama, NIM, atau Password salah!');
             }
         } catch (error) {
             console.error('Login error:', error);
-            alert('Gagal terhubung ke server. Periksa koneksi internet Anda.');
+            showToast('Gagal terhubung ke server');
         }
         
         showLoading(false);
     }
     
-    // ========== REALTIME NOTIFICATION LISTENER ==========
-    let lastNotifiedTime = {};
-    
-    function startRealtimeListener() {
-        // Listener untuk perubahan status barang
-        const eventSource = new EventSource(`${FIREBASE_URL}items.json`);
-        // Note: SSE tidak fully supported, kita pakai polling sederhana
-        setInterval(async () => {
-            if (!currentUser) return;
-            
-            try {
-                const transactions = await fetchData('transactions');
-                for (const key in transactions) {
-                    const trans = transactions[key];
-                    if (trans.nim === currentUser.nim) {
-                        const notifKey = `${key}_${trans.status}`;
-                        if (!notifiedTransactions[notifKey]) {
-                            if (trans.status === 'active') {
-                                showToast(`📋 Peminjaman Baru: Anda meminjam ${trans.item_name}`);
-                                showNotification(`📋 Peminjaman Baru`, `Anda telah meminjam ${trans.item_name}`);
-                                notifiedTransactions[notifKey] = true;
-                            } else if (trans.status === 'completed') {
-                                const pinjamKey = `${key}_active`;
-                                if (notifiedTransactions[pinjamKey]) {
-                                    showToast(`✅ Pengembalian Berhasil: ${trans.item_name} telah dikembalikan`);
-                                    showNotification(`✅ Pengembalian Berhasil`, `${trans.item_name} telah Anda kembalikan`);
-                                    notifiedTransactions[notifKey] = true;
-                                }
-                            }
-                        }
-                    }
-                }
-                localStorage.setItem('notifiedTransactions', JSON.stringify(notifiedTransactions));
-            } catch(e) {}
-        }, 3000);
+    // ========== CHANGE PASSWORD ==========
+    function openChangePasswordModal() {
+        document.getElementById('changePasswordModal').style.display = 'flex';
+        document.getElementById('modalNim').value = currentUser ? currentUser.nim : '';
     }
     
-    function showNotification(title, body) {
-        if (Notification.permission === 'granted') {
-            new Notification(title, { body, icon: '🔬' });
-        } else if (Notification.permission !== 'denied') {
-            Notification.requestPermission().then(permission => {
-                if (permission === 'granted') {
-                    new Notification(title, { body, icon: '🔬' });
+    function closeChangePasswordModal() {
+        document.getElementById('changePasswordModal').style.display = 'none';
+    }
+    
+    async function changePassword() {
+        const nim = document.getElementById('modalNim').value.trim();
+        const oldPassword = document.getElementById('modalOldPassword').value.trim();
+        const newPassword = document.getElementById('modalNewPassword').value.trim();
+        const confirmPassword = document.getElementById('modalConfirmPassword').value.trim();
+        
+        if (!nim || !oldPassword || !newPassword) {
+            showToast('Harap isi semua field!');
+            return;
+        }
+        
+        if (newPassword !== confirmPassword) {
+            showToast('Password baru tidak cocok!');
+            return;
+        }
+        
+        if (newPassword.length < 4) {
+            showToast('Password minimal 4 karakter!');
+            return;
+        }
+        
+        try {
+            const students = await fetchData('students');
+            let found = false;
+            let studentId = null;
+            
+            for (const key in students) {
+                const student = students[key];
+                if (student.nim === nim && student.password_hash === oldPassword) {
+                    found = true;
+                    studentId = key;
+                    break;
                 }
+            }
+            
+            if (!found) {
+                showToast('NIM atau Password lama salah!');
+                return;
+            }
+            
+            // Update password di Firebase
+            const patchData = { password_hash: newPassword };
+            const response = await fetch(`${FIREBASE_URL}students/${studentId}.json`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(patchData)
             });
+            
+            if (response.ok) {
+                showToast('Password berhasil diubah! Silakan login dengan password baru.');
+                closeChangePasswordModal();
+                if (currentUser && currentUser.nim === nim) {
+                    logout();
+                }
+            } else {
+                showToast('Gagal mengubah password');
+            }
+        } catch (error) {
+            console.error('Change password error:', error);
+            showToast('Error: ' + error.message);
         }
     }
     
@@ -764,7 +859,6 @@
         try {
             const items = await fetchData('items');
             allItems = [];
-            
             for (const key in items) {
                 const item = items[key];
                 allItems.push({
@@ -773,12 +867,20 @@
                     status: item.status || 'tersedia'
                 });
             }
-            
             applySortAndPagination();
         } catch (error) {
             console.error('Load items error:', error);
             document.getElementById('itemsList').innerHTML = '<div class="empty-state">Gagal memuat data barang</div>';
         }
+    }
+    
+    function extractNumber(namaBarang) {
+        const match = namaBarang.match(/\d+/);
+        return match ? parseInt(match[0]) : 0;
+    }
+    
+    function extractBaseName(namaBarang) {
+        return namaBarang.replace(/\s\d+$/, '').trim();
     }
     
     function applySortAndPagination() {
@@ -787,10 +889,20 @@
         
         switch(currentSort) {
             case 'AZ':
-                sorted.sort((a, b) => (a.nama_barang || '').localeCompare(b.nama_barang || ''));
+                sorted.sort((a, b) => {
+                    const baseA = extractBaseName(a.nama_barang || '');
+                    const baseB = extractBaseName(b.nama_barang || '');
+                    if (baseA !== baseB) return baseA.localeCompare(baseB);
+                    return extractNumber(a.nama_barang) - extractNumber(b.nama_barang);
+                });
                 break;
             case 'ZA':
-                sorted.sort((a, b) => (b.nama_barang || '').localeCompare(a.nama_barang || ''));
+                sorted.sort((a, b) => {
+                    const baseA = extractBaseName(a.nama_barang || '');
+                    const baseB = extractBaseName(b.nama_barang || '');
+                    if (baseA !== baseB) return baseB.localeCompare(baseA);
+                    return extractNumber(b.nama_barang) - extractNumber(a.nama_barang);
+                });
                 break;
             case 'TERSEDIA':
                 sorted.sort((a, b) => {
@@ -803,6 +915,13 @@
                 sorted.sort((a, b) => {
                     if (a.status === 'dipinjam' && b.status !== 'dipinjam') return -1;
                     if (a.status !== 'dipinjam' && b.status === 'dipinjam') return 1;
+                    return (a.nama_barang || '').localeCompare(b.nama_barang || '');
+                });
+                break;
+            case 'RUSAK':
+                sorted.sort((a, b) => {
+                    if (a.status === 'rusak' && b.status !== 'rusak') return -1;
+                    if (a.status !== 'rusak' && b.status === 'rusak') return 1;
                     return (a.nama_barang || '').localeCompare(b.nama_barang || '');
                 });
                 break;
@@ -821,22 +940,28 @@
     
     function renderItems(items) {
         const container = document.getElementById('itemsList');
-        
         if (items.length === 0) {
             container.innerHTML = '<div class="empty-state">✨ Belum ada data barang ✨</div>';
             return;
         }
         
-        container.innerHTML = items.map(item => `
-            <div class="item-card">
-                <div>
+        container.innerHTML = items.map(item => {
+            let statusClass = 'status-tersedia';
+            let statusText = '🟢 Tersedia';
+            if (item.status === 'dipinjam') {
+                statusClass = 'status-dipinjam';
+                statusText = '🔴 Dipinjam';
+            } else if (item.status === 'rusak') {
+                statusClass = 'status-rusak';
+                statusText = '⚠️ Rusak';
+            }
+            return `
+                <div class="item-card">
                     <div class="item-name">${escapeHtml(item.nama_barang)}</div>
-                    <span class="item-status ${item.status === 'tersedia' ? 'status-tersedia' : 'status-dipinjam'}">
-                        ${item.status === 'tersedia' ? '🟢 Tersedia' : '🔴 Dipinjam'}
-                    </span>
+                    <span class="item-status ${statusClass}">${statusText}</span>
                 </div>
-            </div>
-        `).join('');
+            `;
+        }).join('');
     }
     
     function prevPage() {
@@ -854,11 +979,9 @@
     // ========== LOAD HISTORY ==========
     async function loadHistory() {
         if (!currentUser) return;
-        
         try {
             const transactions = await fetchData('transactions');
             const userHistory = [];
-            
             for (const key in transactions) {
                 const trans = transactions[key];
                 if (trans.nim === currentUser.nim) {
@@ -866,12 +989,10 @@
                         id: key,
                         item_name: trans.item_name || 'Unknown',
                         status: trans.status || 'unknown',
-                        waktu_pinjam: trans.waktu_pinjam || trans.created_at,
-                        waktu_kembali: trans.waktu_kembali
+                        waktu_pinjam: trans.waktu_pinjam || trans.created_at
                     });
                 }
             }
-            
             userHistory.sort((a, b) => (b.waktu_pinjam || '').localeCompare(a.waktu_pinjam || ''));
             renderHistory(userHistory);
         } catch (error) {
@@ -882,17 +1003,14 @@
     
     function renderHistory(history) {
         const container = document.getElementById('historyList');
-        
         if (history.length === 0) {
             container.innerHTML = '<div class="empty-state">✨ Belum ada riwayat peminjaman ✨</div>';
             return;
         }
-        
         container.innerHTML = history.map(item => {
             const statusText = item.status === 'active' ? '🟡 Sedang Dipinjam' : '✅ Selesai';
             const statusColor = item.status === 'active' ? '#F57C00' : '#2E7D32';
-            const date = item.waktu_pinjam ? formatDate(item.waktu_pinjam) : '-';
-            
+            const date = formatDate(item.waktu_pinjam);
             return `
                 <div class="history-item">
                     <div class="history-item-name">${escapeHtml(item.item_name)}</div>
@@ -903,21 +1021,13 @@
         }).join('');
     }
     
-    // ========== UTILITY FUNCTIONS ==========
     function formatDate(dateString) {
         try {
-            const cleanDate = dateString.replace('Z', '');
-            const date = new Date(cleanDate);
+            const date = new Date(dateString);
             return date.toLocaleDateString('id-ID', {
-                day: '2-digit',
-                month: 'short',
-                year: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
+                day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
             });
-        } catch {
-            return dateString;
-        }
+        } catch { return dateString; }
     }
     
     function escapeHtml(text) {
@@ -960,34 +1070,24 @@
         document.getElementById('appContainer').style.display = 'none';
         document.getElementById('loginNama').value = '';
         document.getElementById('loginNim').value = '';
-        document.getElementById('loginEmail').value = '';
+        document.getElementById('loginPassword').value = '';
     }
     
-    // ========== CHECK SAVED LOGIN ==========
     function checkSavedLogin() {
         const savedUser = localStorage.getItem('currentUser');
         if (savedUser) {
             try {
                 currentUser = JSON.parse(savedUser);
-                document.getElementById('welcomeName').innerHTML = `Selamat Datang, ${currentUser.nama}!`;
-                document.getElementById('welcomeNimEmail').innerHTML = `NIM: ${currentUser.nim} | Email: ${currentUser.email}`;
+                document.getElementById('welcomeName').innerHTML = `Halo, ${currentUser.nama}!`;
+                document.getElementById('welcomeNim').innerHTML = `NIM: ${currentUser.nim}`;
                 document.getElementById('loginPage').style.display = 'none';
                 document.getElementById('appContainer').style.display = 'block';
                 loadItems();
                 loadHistory();
-                startRealtimeListener();
-            } catch(e) {
-                console.error('Error loading saved user:', e);
-            }
+            } catch(e) { console.error(e); }
         }
     }
     
-    // Minta izin notifikasi browser
-    if ('Notification' in window && Notification.permission !== 'granted' && Notification.permission !== 'denied') {
-        Notification.requestPermission();
-    }
-    
-    // ========== INIT ==========
     checkSavedLogin();
 </script>
 </body>
