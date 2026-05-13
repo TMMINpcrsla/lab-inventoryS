@@ -8,519 +8,93 @@
     <meta name="apple-mobile-web-app-title" content="Lab Inventory">
     <meta name="theme-color" content="#1976D2">
     <title>Lab Inventory - Mahasiswa</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bcryptjs/2.4.3/bcrypt.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #F5F7FA;
-            color: #333333;
-            min-height: 100vh;
-        }
-
-        /* ========== LOGIN PAGE ========== */
-        .login-container {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            background: linear-gradient(135deg, #1976D2, #1565C0);
-        }
-
-        .login-card {
-            background: white;
-            border-radius: 24px;
-            padding: 32px;
-            width: 100%;
-            max-width: 400px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-        }
-
-        .login-icon {
-            text-align: center;
-            font-size: 56px;
-            margin-bottom: 16px;
-        }
-
-        .login-title {
-            text-align: center;
-            font-size: 24px;
-            font-weight: 700;
-            color: #1976D2;
-            margin-bottom: 8px;
-        }
-
-        .login-subtitle {
-            text-align: center;
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 32px;
-        }
-
-        .input-group {
-            margin-bottom: 20px;
-        }
-
-        .input-group label {
-            display: block;
-            font-size: 13px;
-            font-weight: 500;
-            color: #555;
-            margin-bottom: 6px;
-        }
-
-        .input-group input {
-            width: 100%;
-            padding: 14px 16px;
-            border: 1.5px solid #E0E0E0;
-            border-radius: 12px;
-            font-size: 14px;
-            transition: all 0.3s ease;
-        }
-
-        .input-group input:focus {
-            outline: none;
-            border-color: #1976D2;
-            box-shadow: 0 0 0 3px rgba(25,118,210,0.1);
-        }
-
-        .btn-login {
-            width: 100%;
-            padding: 14px;
-            background: #1976D2;
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 8px;
-        }
-
-        .btn-login:hover {
-            background: #1565C0;
-            transform: translateY(-2px);
-        }
-
-        .btn-secondary {
-            width: 100%;
-            padding: 12px;
-            background: transparent;
-            color: #1976D2;
-            border: 1.5px solid #1976D2;
-            border-radius: 12px;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 12px;
-        }
-
-        .btn-secondary:hover {
-            background: #E3F2FD;
-        }
-
-        .login-footer {
-            text-align: center;
-            font-size: 11px;
-            color: #999;
-            margin-top: 24px;
-        }
-
-        /* ========== MAIN APP (Dashboard) ========== */
-        .app-container {
-            display: none;
-            min-height: 100vh;
-            background: #F5F7FA;
-        }
-
-        .app-header {
-            background: linear-gradient(135deg, #1976D2, #1565C0);
-            padding: 20px;
-            padding-top: 50px;
-            color: white;
-        }
-
-        .app-header h2 {
-            font-size: 20px;
-            margin-bottom: 4px;
-        }
-
-        .app-header p {
-            font-size: 13px;
-            opacity: 0.8;
-        }
-
-        .menu-grid {
-            padding: 20px;
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
-        }
-
-        .menu-card {
-            background: white;
-            border-radius: 20px;
-            padding: 24px 16px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-        }
-
-        .menu-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-        }
-
-        .menu-icon {
-            font-size: 40px;
-            margin-bottom: 12px;
-        }
-
-        .menu-title {
-            font-weight: 600;
-            font-size: 14px;
-            margin-bottom: 4px;
-        }
-
-        .menu-desc {
-            font-size: 11px;
-            color: #999;
-        }
-
-        .info-card {
-            background: white;
-            margin: 0 20px 20px 20px;
-            padding: 16px;
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-        }
-
-        .info-icon {
-            font-size: 28px;
-        }
-
-        .info-text {
-            flex: 1;
-        }
-
-        .info-text h4 {
-            font-size: 13px;
-            margin-bottom: 4px;
-        }
-
-        .info-text p {
-            font-size: 11px;
-            color: #666;
-        }
-
-        .btn-logout {
-            margin: 0 20px 30px 20px;
-            padding: 14px;
-            background: #EF4444;
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            width: calc(100% - 40px);
-        }
-
-        .btn-change-password {
-            margin: 0 20px 16px 20px;
-            padding: 12px;
-            background: transparent;
-            color: #1976D2;
-            border: 1px solid #1976D2;
-            border-radius: 12px;
-            font-weight: 500;
-            cursor: pointer;
-            width: calc(100% - 40px);
-        }
-
-        /* ========== LIST BARANG PAGE ========== */
-        .page {
-            display: none;
-            min-height: 100vh;
-            background: #F5F7FA;
-        }
-
-        .page-header {
-            background: #1976D2;
-            padding: 20px;
-            padding-top: 50px;
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .back-btn {
-            background: rgba(255,255,255,0.2);
-            border: none;
-            width: 40px;
-            height: 40px;
-            border-radius: 12px;
-            font-size: 20px;
-            cursor: pointer;
-            color: white;
-        }
-
-        .page-header h1 {
-            color: white;
-            font-size: 20px;
-            flex: 1;
-        }
-
-        .sort-container {
-            padding: 16px;
-            background: white;
-            margin: 16px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-
-        .sort-container label {
-            font-size: 13px;
-            font-weight: 500;
-        }
-
-        .sort-select {
-            flex: 1;
-            padding: 10px;
-            border: 1px solid #E0E0E0;
-            border-radius: 10px;
-            font-size: 13px;
-        }
-
-        .items-list {
-            padding: 0 16px;
-        }
-
-        .item-card {
-            background: white;
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-
-        .item-name {
-            font-weight: 600;
-            font-size: 15px;
-            margin-bottom: 4px;
-        }
-
-        .item-status {
-            font-size: 12px;
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 20px;
-        }
-
-        .status-tersedia {
-            background: #E8F5E9;
-            color: #2E7D32;
-        }
-
-        .status-dipinjam {
-            background: #FFEBEE;
-            color: #C62828;
-        }
-
-        .status-rusak {
-            background: #FFF3E0;
-            color: #F57C00;
-        }
-
-        .pagination {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 16px;
-            padding: 20px;
-        }
-
-        .page-btn {
-            background: #1976D2;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 500;
-        }
-
-        .page-btn:disabled {
-            background: #CCC;
-            cursor: not-allowed;
-        }
-
-        .page-info {
-            font-size: 13px;
-            color: #666;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: #999;
-        }
-
-        /* History Page */
-        .history-item {
-            background: white;
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 12px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-
-        .history-item-name {
-            font-weight: 600;
-            font-size: 15px;
-            margin-bottom: 8px;
-        }
-
-        .history-date {
-            font-size: 11px;
-            color: #999;
-            margin-bottom: 4px;
-        }
-
-        .history-status {
-            font-size: 12px;
-            font-weight: 500;
-        }
-
-        /* Aturan Page */
-        .aturan-content {
-            padding: 20px;
-        }
-
-        .aturan-card {
-            background: white;
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 16px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-
-        .aturan-title {
-            font-weight: 700;
-            font-size: 16px;
-            color: #1976D2;
-            margin-bottom: 8px;
-        }
-
-        .aturan-text {
-            font-size: 13px;
-            color: #444;
-            line-height: 1.5;
-        }
-
-        .warning-card {
-            background: #FFF3E0;
-            border-left: 4px solid #F57C00;
-            margin-bottom: 20px;
-        }
-
-        /* Change Password Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-        }
-
-        .modal-content {
-            background: white;
-            border-radius: 24px;
-            padding: 24px;
-            width: 90%;
-            max-width: 400px;
-        }
-
-        .modal-content h3 {
-            margin-bottom: 20px;
-            color: #1976D2;
-        }
-
-        .modal-content input {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #E0E0E0;
-            border-radius: 10px;
-            margin-bottom: 12px;
-        }
-
-        .modal-buttons {
-            display: flex;
-            gap: 12px;
-            margin-top: 16px;
-        }
-
-        .modal-buttons button {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-        }
-
-        .btn-save {
-            background: #1976D2;
-            color: white;
-        }
-
-        .btn-cancel {
-            background: #EF4444;
-            color: white;
-        }
-
-        /* Toast Notification */
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            right: 20px;
-            background: #333;
-            color: white;
-            padding: 12px;
-            border-radius: 12px;
-            text-align: center;
-            z-index: 1100;
-            animation: fadeInUp 0.3s ease;
-        }
-
-        @keyframes fadeInUp {
-            from { transform: translateY(100px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: #F5F7FA; color: #333; min-height: 100vh; }
+
+        /* Login Page */
+        .login-container { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; background: linear-gradient(135deg, #1976D2, #1565C0); }
+        .login-card { background: white; border-radius: 24px; padding: 32px; width: 100%; max-width: 400px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+        .login-icon { text-align: center; font-size: 56px; margin-bottom: 16px; }
+        .login-title { text-align: center; font-size: 24px; font-weight: 700; color: #1976D2; margin-bottom: 8px; }
+        .login-subtitle { text-align: center; font-size: 14px; color: #666; margin-bottom: 32px; }
+        .input-group { margin-bottom: 20px; }
+        .input-group label { display: block; font-size: 13px; font-weight: 500; color: #555; margin-bottom: 6px; }
+        .input-group input { width: 100%; padding: 14px 16px; border: 1.5px solid #E0E0E0; border-radius: 12px; font-size: 14px; transition: all 0.3s ease; }
+        .input-group input:focus { outline: none; border-color: #1976D2; box-shadow: 0 0 0 3px rgba(25,118,210,0.1); }
+        .btn-login { width: 100%; padding: 14px; background: #1976D2; color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 8px; }
+        .btn-login:hover { background: #1565C0; transform: translateY(-2px); }
+        .btn-secondary { width: 100%; padding: 12px; background: transparent; color: #1976D2; border: 1.5px solid #1976D2; border-radius: 12px; font-size: 14px; font-weight: 500; cursor: pointer; margin-top: 12px; }
+        .btn-secondary:hover { background: #E3F2FD; }
+        .login-footer { text-align: center; font-size: 11px; color: #999; margin-top: 24px; }
+
+        /* Dashboard */
+        .app-container { display: none; min-height: 100vh; background: #F5F7FA; }
+        .app-header { background: linear-gradient(135deg, #1976D2, #1565C0); padding: 20px; padding-top: 50px; color: white; }
+        .app-header h2 { font-size: 20px; margin-bottom: 4px; }
+        .app-header p { font-size: 13px; opacity: 0.8; }
+        .menu-grid { padding: 20px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+        .menu-card { background: white; border-radius: 20px; padding: 24px 16px; text-align: center; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .menu-card:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+        .menu-icon { font-size: 40px; margin-bottom: 12px; }
+        .menu-title { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
+        .menu-desc { font-size: 11px; color: #999; }
+        .info-card { background: white; margin: 0 20px 20px 20px; padding: 16px; border-radius: 16px; display: flex; align-items: center; gap: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .info-icon { font-size: 28px; }
+        .info-text { flex: 1; }
+        .info-text h4 { font-size: 13px; margin-bottom: 4px; }
+        .info-text p { font-size: 11px; color: #666; }
+        .btn-logout { margin: 0 20px 30px 20px; padding: 14px; background: #EF4444; color: white; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; width: calc(100% - 40px); }
+        .btn-change-password { margin: 0 20px 16px 20px; padding: 12px; background: transparent; color: #1976D2; border: 1px solid #1976D2; border-radius: 12px; font-weight: 500; cursor: pointer; width: calc(100% - 40px); }
+
+        /* Pages */
+        .page { display: none; min-height: 100vh; background: #F5F7FA; }
+        .page-header { background: #1976D2; padding: 20px; padding-top: 50px; display: flex; align-items: center; gap: 16px; }
+        .back-btn { background: rgba(255,255,255,0.2); border: none; width: 40px; height: 40px; border-radius: 12px; font-size: 20px; cursor: pointer; color: white; }
+        .page-header h1 { color: white; font-size: 20px; flex: 1; }
+        .sort-container { padding: 16px; background: white; margin: 16px; border-radius: 12px; display: flex; align-items: center; gap: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .sort-select { flex: 1; padding: 10px; border: 1px solid #E0E0E0; border-radius: 10px; font-size: 13px; }
+        .items-list { padding: 0 16px; }
+        .item-card { background: white; border-radius: 16px; padding: 16px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .item-name { font-weight: 600; font-size: 15px; }
+        .item-status { font-size: 12px; padding: 4px 10px; border-radius: 20px; }
+        .status-tersedia { background: #E8F5E9; color: #2E7D32; }
+        .status-dipinjam { background: #FFEBEE; color: #C62828; }
+        .status-rusak { background: #FFF3E0; color: #F57C00; }
+        .pagination { display: flex; justify-content: center; align-items: center; gap: 16px; padding: 20px; }
+        .page-btn { background: #1976D2; color: white; border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer; }
+        .page-btn:disabled { background: #CCC; cursor: not-allowed; }
+        .page-info { font-size: 13px; color: #666; }
+        .empty-state { text-align: center; padding: 60px 20px; color: #999; }
+
+        /* History */
+        .history-item { background: white; border-radius: 16px; padding: 16px; margin-bottom: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .history-item-name { font-weight: 600; font-size: 15px; margin-bottom: 8px; }
+        .history-date { font-size: 11px; color: #999; margin-bottom: 4px; }
+        .history-status { font-size: 12px; font-weight: 500; }
+
+        /* Aturan */
+        .aturan-content { padding: 20px; }
+        .aturan-card { background: white; border-radius: 16px; padding: 20px; margin-bottom: 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .aturan-title { font-weight: 700; font-size: 16px; color: #1976D2; margin-bottom: 8px; }
+        .aturan-text { font-size: 13px; color: #444; line-height: 1.5; }
+        .warning-card { background: #FFF3E0; border-left: 4px solid #F57C00; margin-bottom: 20px; }
+
+        /* Modal */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1000; }
+        .modal-content { background: white; border-radius: 24px; padding: 24px; width: 90%; max-width: 400px; }
+        .modal-content h3 { margin-bottom: 20px; color: #1976D2; }
+        .modal-content input { width: 100%; padding: 12px; border: 1px solid #E0E0E0; border-radius: 10px; margin-bottom: 12px; }
+        .modal-buttons { display: flex; gap: 12px; margin-top: 16px; }
+        .modal-buttons button { flex: 1; padding: 12px; border: none; border-radius: 10px; cursor: pointer; }
+        .btn-save { background: #1976D2; color: white; }
+        .btn-cancel { background: #EF4444; color: white; }
+
+        /* Toast */
+        .toast { position: fixed; bottom: 20px; left: 20px; right: 20px; background: #333; color: white; padding: 12px; border-radius: 12px; text-align: center; z-index: 1100; animation: fadeInUp 0.3s ease; }
+        @keyframes fadeInUp { from { transform: translateY(100px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
     </style>
 </head>
 <body>
@@ -531,22 +105,9 @@
         <div class="login-icon">🔬</div>
         <h1 class="login-title">Lab Inventory System</h1>
         <p class="login-subtitle">Akses untuk Mahasiswa</p>
-        
-        <div class="input-group">
-            <label>Nama Lengkap</label>
-            <input type="text" id="loginNama" placeholder="Masukkan nama lengkap">
-        </div>
-        
-        <div class="input-group">
-            <label>NIM</label>
-            <input type="text" id="loginNim" placeholder="Masukkan NIM" inputmode="numeric">
-        </div>
-        
-        <div class="input-group">
-            <label>Password</label>
-            <input type="password" id="loginPassword" placeholder="Masukkan password">
-        </div>
-        
+        <div class="input-group"><label>Nama Lengkap</label><input type="text" id="loginNama" placeholder="Masukkan nama lengkap"></div>
+        <div class="input-group"><label>NIM</label><input type="text" id="loginNim" placeholder="Masukkan NIM" inputmode="numeric"></div>
+        <div class="input-group"><label>Password</label><input type="password" id="loginPassword" placeholder="Masukkan password"></div>
         <button class="btn-login" onclick="handleLogin()">Login</button>
         <button class="btn-secondary" onclick="openChangePasswordModal()">Lupa / Ganti Password</button>
         <div class="login-footer">*Akun didaftarkan melalui Laboran</div>
@@ -561,534 +122,194 @@
         <input type="password" id="modalOldPassword" placeholder="Password Lama">
         <input type="password" id="modalNewPassword" placeholder="Password Baru (min 4 karakter)">
         <input type="password" id="modalConfirmPassword" placeholder="Konfirmasi Password Baru">
-        <div class="modal-buttons">
-            <button class="btn-cancel" onclick="closeChangePasswordModal()">Batal</button>
-            <button class="btn-save" onclick="changePassword()">Simpan</button>
-        </div>
+        <div class="modal-buttons"><button class="btn-cancel" onclick="closeChangePasswordModal()">Batal</button><button class="btn-save" onclick="changePassword()">Simpan</button></div>
     </div>
 </div>
 
-<!-- MAIN APP DASHBOARD -->
+<!-- DASHBOARD -->
 <div id="appContainer" class="app-container">
-    <div class="app-header">
-        <h2 id="welcomeName">Selamat Datang,</h2>
-        <p id="welcomeNim">NIM: -</p>
-    </div>
-    
+    <div class="app-header"><h2 id="welcomeName">Selamat Datang,</h2><p id="welcomeNim">NIM: -</p></div>
     <div class="menu-grid">
-        <div class="menu-card" onclick="showPage('listPage')">
-            <div class="menu-icon">📦</div>
-            <div class="menu-title">Daftar Alat</div>
-            <div class="menu-desc">Lihat semua alat lab</div>
-        </div>
-        <div class="menu-card" onclick="showPage('historyPage')">
-            <div class="menu-icon">📋</div>
-            <div class="menu-title">Peminjaman</div>
-            <div class="menu-desc">Riwayat peminjaman</div>
-        </div>
-        <div class="menu-card" onclick="showPage('aturanPage')">
-            <div class="menu-icon">📜</div>
-            <div class="menu-title">Aturan Lab</div>
-            <div class="menu-desc">Tata tertib lab</div>
-        </div>
+        <div class="menu-card" onclick="showPage('listPage')"><div class="menu-icon">📦</div><div class="menu-title">Daftar Alat</div><div class="menu-desc">Lihat semua alat lab</div></div>
+        <div class="menu-card" onclick="showPage('historyPage')"><div class="menu-icon">📋</div><div class="menu-title">Peminjaman</div><div class="menu-desc">Riwayat peminjaman</div></div>
+        <div class="menu-card" onclick="showPage('aturanPage')"><div class="menu-icon">📜</div><div class="menu-title">Aturan Lab</div><div class="menu-desc">Tata tertib lab</div></div>
     </div>
-    
     <button class="btn-change-password" onclick="openChangePasswordModal()">🔐 Ganti Password</button>
-    
-    <div class="info-card">
-        <div class="info-icon">ℹ️</div>
-        <div class="info-text">
-            <h4>Informasi</h4>
-            <p>Pastikan data diri Anda sudah benar sebelum melakukan peminjaman</p>
-        </div>
-    </div>
-    
+    <div class="info-card"><div class="info-icon">ℹ️</div><div class="info-text"><h4>Informasi</h4><p>Pastikan data diri Anda sudah benar sebelum melakukan peminjaman</p></div></div>
     <button class="btn-logout" onclick="logout()">LOGOUT</button>
 </div>
 
 <!-- LIST BARANG PAGE -->
 <div id="listPage" class="page">
-    <div class="page-header">
-        <button class="back-btn" onclick="showPage('dashboard')">←</button>
-        <h1>📦 Daftar Alat Lab</h1>
-    </div>
-    
-    <div class="sort-container">
-        <label>Urutkan:</label>
-        <select id="sortSelect" class="sort-select" onchange="applySortAndPagination()">
-            <option value="AZ">A-Z</option>
-            <option value="ZA">Z-A</option>
-            <option value="TERSEDIA">Tersedia Terlebih Dahulu</option>
-            <option value="DIPINJAM">Dipinjam Terlebih Dahulu</option>
-            <option value="RUSAK">Rusak Terlebih Dahulu</option>
-        </select>
-    </div>
-    
-    <div id="itemsList" class="items-list">
-        <div class="empty-state">Memuat data...</div>
-    </div>
-    
-    <div class="pagination">
-        <button id="prevBtn" class="page-btn" onclick="prevPage()">◀ Sebelumnya</button>
-        <span id="pageInfo" class="page-info">Halaman 1</span>
-        <button id="nextBtn" class="page-btn" onclick="nextPage()">Selanjutnya ▶</button>
-    </div>
+    <div class="page-header"><button class="back-btn" onclick="showPage('dashboard')">←</button><h1>📦 Daftar Alat Lab</h1></div>
+    <div class="sort-container"><label>Urutkan:</label><select id="sortSelect" class="sort-select" onchange="applySortAndPagination()"><option value="AZ">A-Z</option><option value="ZA">Z-A</option><option value="TERSEDIA">Tersedia Terlebih Dahulu</option><option value="DIPINJAM">Dipinjam Terlebih Dahulu</option><option value="RUSAK">Rusak Terlebih Dahulu</option></select></div>
+    <div id="itemsList" class="items-list"><div class="empty-state">Memuat data...</div></div>
+    <div class="pagination"><button id="prevBtn" class="page-btn" onclick="prevPage()">◀ Sebelumnya</button><span id="pageInfo" class="page-info">Halaman 1</span><button id="nextBtn" class="page-btn" onclick="nextPage()">Selanjutnya ▶</button></div>
 </div>
 
 <!-- HISTORY PAGE -->
 <div id="historyPage" class="page">
-    <div class="page-header">
-        <button class="back-btn" onclick="showPage('dashboard')">←</button>
-        <h1>📋 Riwayat Peminjaman</h1>
-    </div>
-    <div id="historyList" class="items-list" style="padding: 16px;">
-        <div class="empty-state">Memuat riwayat...</div>
-    </div>
+    <div class="page-header"><button class="back-btn" onclick="showPage('dashboard')">←</button><h1>📋 Riwayat Peminjaman</h1></div>
+    <div id="historyList" class="items-list" style="padding: 16px;"><div class="empty-state">Memuat riwayat...</div></div>
 </div>
 
 <!-- ATURAN PAGE -->
 <div id="aturanPage" class="page">
-    <div class="page-header">
-        <button class="back-btn" onclick="showPage('dashboard')">←</button>
-        <h1>📜 Aturan Laboratorium</h1>
-    </div>
+    <div class="page-header"><button class="back-btn" onclick="showPage('dashboard')">←</button><h1>📜 Aturan Laboratorium</h1></div>
     <div class="aturan-content">
-        <div class="aturan-card warning-card">
-            <div class="aturan-title">⚠️ PERINGATAN</div>
-            <div class="aturan-text">Kelalaian terhadap tata tertib dapat dikenakan sanksi sesuai ketentuan yang berlaku.</div>
-        </div>
-        <div class="aturan-card">
-            <div class="aturan-title">1. Penggunaan Dalam Kampus</div>
-            <div class="aturan-text">Barang laboratorium hanya diperbolehkan digunakan di area kampus.</div>
-        </div>
-        <div class="aturan-card">
-            <div class="aturan-title">2. Proses Peminjaman & Pengembalian</div>
-            <div class="aturan-text">Setiap mahasiswa diwajibkan melakukan identifikasi diri menggunakan KTM serta memindai alat/barang melalui sensor yang telah disediakan. Pastikan data mahasiswa dan alat/barang terverifikasi dengan akurat. Sistem akan mengirimkan notifikasi real-time sebagai bukti transaksi.</div>
-        </div>
-        <div class="aturan-card">
-            <div class="aturan-title">3. Durasi Peminjaman</div>
-            <div class="aturan-text">Peminjaman barang laboratorium disarankan untuk jangka waktu 1 hari. Jika memerlukan waktu lebih dari 1 hari, maka peminjam harus berkoordinasi terlebih dahulu dengan dosen pembimbing.</div>
-        </div>
-        <div class="aturan-card">
-            <div class="aturan-title">4. Pengajuan Peminjaman Jangka Panjang</div>
-            <div class="aturan-text">Jika dosen pembimbing mengizinkan peminjaman jangka panjang, maka peminjam wajib mengirimkan email kepada kepala laboratorium dan cc kepala program.</div>
-        </div>
-        <div class="aturan-card">
-            <div class="aturan-title">5. Batas Maksimal Peminjaman</div>
-            <div class="aturan-text">Batas maksimal peminjaman barang laboratorium adalah 1 bulan.</div>
-        </div>
-        <div class="aturan-card">
-            <div class="aturan-title">6. Perpanjangan Peminjaman</div>
-            <div class="aturan-text">Setelah 1 bulan, jika masih memerlukan barang, peminjam perlu mengajukan permohonan ulang dari proses awal.</div>
-        </div>
-        <div class="aturan-card">
-            <div class="aturan-title">7. Pengembalian Barang</div>
-            <div class="aturan-text">Peminjam wajib mengembalikan barang yang dipinjam kepada laboran secara langsung.</div>
-        </div>
-        <div class="aturan-card">
-            <div class="aturan-title">8. Tanggung Jawab</div>
-            <div class="aturan-text">Jika merusak atau menghilangkan barang, peminjam wajib mengganti rugi senilai harga barang tersebut atau mengganti dengan barang baru yang sama.</div>
-        </div>
-        <div class="aturan-card">
-            <div class="aturan-text" style="font-style: italic; text-align: center;">Semua peminjam wajib mematuhi peraturan ini demi kelancaran dan keamanan.</div>
-            <div class="aturan-text" style="text-align: center; margin-top: 12px;">Tertanda,<br>Laboratorium</div>
-        </div>
+        <div class="aturan-card warning-card"><div class="aturan-title">⚠️ PERINGATAN</div><div class="aturan-text">Kelalaian terhadap tata tertib dapat dikenakan sanksi sesuai ketentuan yang berlaku.</div></div>
+        <div class="aturan-card"><div class="aturan-title">1. Penggunaan Dalam Kampus</div><div class="aturan-text">Barang laboratorium hanya diperbolehkan digunakan di area kampus.</div></div>
+        <div class="aturan-card"><div class="aturan-title">2. Proses Peminjaman & Pengembalian</div><div class="aturan-text">Setiap mahasiswa diwajibkan melakukan identifikasi diri menggunakan KTM serta memindai alat/barang melalui sensor yang telah disediakan. Pastikan data mahasiswa dan alat/barang terverifikasi dengan akurat. Sistem akan mengirimkan notifikasi real-time sebagai bukti transaksi.</div></div>
+        <div class="aturan-card"><div class="aturan-title">3. Durasi Peminjaman</div><div class="aturan-text">Peminjaman barang laboratorium disarankan untuk jangka waktu 1 hari. Jika memerlukan waktu lebih dari 1 hari, maka peminjam harus berkoordinasi terlebih dahulu dengan dosen pembimbing.</div></div>
+        <div class="aturan-card"><div class="aturan-title">4. Pengajuan Peminjaman Jangka Panjang</div><div class="aturan-text">Jika dosen pembimbing mengizinkan peminjaman jangka panjang, maka peminjam wajib mengirimkan email kepada kepala laboratorium dan cc kepala program.</div></div>
+        <div class="aturan-card"><div class="aturan-title">5. Batas Maksimal Peminjaman</div><div class="aturan-text">Batas maksimal peminjaman barang laboratorium adalah 1 bulan.</div></div>
+        <div class="aturan-card"><div class="aturan-title">6. Perpanjangan Peminjaman</div><div class="aturan-text">Setelah 1 bulan, jika masih memerlukan barang, peminjam perlu mengajukan permohonan ulang dari proses awal.</div></div>
+        <div class="aturan-card"><div class="aturan-title">7. Pengembalian Barang</div><div class="aturan-text">Peminjam wajib mengembalikan barang yang dipinjam kepada laboran secara langsung.</div></div>
+        <div class="aturan-card"><div class="aturan-title">8. Tanggung Jawab</div><div class="aturan-text">Jika merusak atau menghilangkan barang, peminjam wajib mengganti rugi senilai harga barang tersebut atau mengganti dengan barang baru yang sama.</div></div>
+        <div class="aturan-card"><div class="aturan-text" style="font-style: italic; text-align: center;">Semua peminjam wajib mematuhi peraturan ini demi kelancaran dan keamanan.</div><div class="aturan-text" style="text-align: center; margin-top: 12px;">Tertanda,<br>Laboratorium</div></div>
     </div>
 </div>
 
 <script>
-    // ========== FIREBASE CONFIGURATION ==========
     const FIREBASE_URL = "https://lab-inventory-smart-system-default-rtdb.asia-southeast1.firebasedatabase.app/";
-    
     let currentUser = null;
     let allItems = [];
-    let allTransactions = [];
     let currentPage = 1;
     const itemsPerPage = 10;
     let currentSort = "AZ";
-    
-    // Helper functions
-    async function fetchData(path) {
-        const response = await fetch(`${FIREBASE_URL}${path}.json`);
-        return await response.json();
-    }
-    
-    function showToast(message) {
-        const existing = document.querySelector('.toast');
-        if (existing) existing.remove();
-        const toast = document.createElement('div');
-        toast.className = 'toast';
-        toast.innerText = message;
-        document.body.appendChild(toast);
-        setTimeout(() => toast.remove(), 3000);
-    }
-    
-    // MD5 Hash function (untuk BCrypt di client tidak bisa, jadi kita asumsikan password_hash sudah di-hash di backend)
-    // Untuk demo, kita pakai perbandingan langsung (karena di Web tidak bisa BCrypt tanpa library besar)
-    // Di production, sebaiknya pakai bcryptjs library
-    
-    // ========== LOGIN ==========
+
+    async function fetchData(path) { const res = await fetch(`${FIREBASE_URL}${path}.json`); return await res.json(); }
+    function showToast(msg) { const t = document.createElement('div'); t.className = 'toast'; t.innerText = msg; document.body.appendChild(t); setTimeout(() => t.remove(), 3000); }
+    function escapeHtml(t) { if (!t) return ''; const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
+    function formatDate(ds) { try { const d = new Date(ds); return d.toLocaleDateString('id-ID', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' }); } catch(e) { return ds; } }
+    function showLoading(s) { document.body.style.cursor = s ? 'wait' : 'default'; }
+
+    // LOGIN dengan BCrypt
     async function handleLogin() {
         const nama = document.getElementById('loginNama').value.trim();
         const nim = document.getElementById('loginNim').value.trim();
         const password = document.getElementById('loginPassword').value.trim();
-        
-        if (!nama || !nim || !password) {
-            showToast('Harap isi semua field!');
-            return;
-        }
-        
+        if (!nama || !nim || !password) { showToast('Harap isi semua field!'); return; }
         showLoading(true);
-        
         try {
             const students = await fetchData('students');
             let found = false;
-            
             for (const key in students) {
-                const student = students[key];
-                if (student.nim === nim && student.nama.toLowerCase() === nama.toLowerCase()) {
-                    // Bandingkan password (di Web sederhana, asumsikan password_hash adalah plain text atau MD5)
-                    // Di sini kita bandingkan langsung dengan field password_hash
-                    if (student.password_hash === password) {
-                        found = true;
-                        currentUser = {
-                            nim: student.nim,
-                            nama: student.nama,
-                            email: student.email,
-                            key: key
-                        };
-                        break;
-                    }
+                const s = students[key];
+                if (s.nim === nim && s.nama.toLowerCase() === nama.toLowerCase()) {
+                    const hash = s.password_hash;
+                    if (hash && hash.startsWith('$2a$')) {
+                        const match = bcrypt.compareSync(password, hash);
+                        if (match) { found = true; currentUser = { nim: s.nim, nama: s.nama, email: s.email, key: key }; break; }
+                    } else if (hash === password) { found = true; currentUser = { nim: s.nim, nama: s.nama, email: s.email, key: key }; break; }
                 }
             }
-            
             if (found) {
                 localStorage.setItem('currentUser', JSON.stringify(currentUser));
                 document.getElementById('welcomeName').innerHTML = `Halo, ${currentUser.nama}!`;
                 document.getElementById('welcomeNim').innerHTML = `NIM: ${currentUser.nim}`;
                 document.getElementById('loginPage').style.display = 'none';
                 document.getElementById('appContainer').style.display = 'block';
-                await loadItems();
-                await loadHistory();
-            } else {
-                showToast('Nama, NIM, atau Password salah!');
-            }
-        } catch (error) {
-            console.error('Login error:', error);
-            showToast('Gagal terhubung ke server');
-        }
-        
+                await loadItems(); await loadHistory();
+            } else { showToast('Nama, NIM, atau Password salah!'); }
+        } catch(e) { console.error(e); showToast('Gagal terhubung ke server'); }
         showLoading(false);
     }
-    
-    // ========== CHANGE PASSWORD ==========
-    function openChangePasswordModal() {
-        document.getElementById('changePasswordModal').style.display = 'flex';
-        document.getElementById('modalNim').value = currentUser ? currentUser.nim : '';
-    }
-    
-    function closeChangePasswordModal() {
-        document.getElementById('changePasswordModal').style.display = 'none';
-    }
-    
+
+    // CHANGE PASSWORD dengan BCrypt
     async function changePassword() {
         const nim = document.getElementById('modalNim').value.trim();
         const oldPassword = document.getElementById('modalOldPassword').value.trim();
         const newPassword = document.getElementById('modalNewPassword').value.trim();
         const confirmPassword = document.getElementById('modalConfirmPassword').value.trim();
-        
-        if (!nim || !oldPassword || !newPassword) {
-            showToast('Harap isi semua field!');
-            return;
-        }
-        
-        if (newPassword !== confirmPassword) {
-            showToast('Password baru tidak cocok!');
-            return;
-        }
-        
-        if (newPassword.length < 4) {
-            showToast('Password minimal 4 karakter!');
-            return;
-        }
-        
+        if (!nim || !oldPassword || !newPassword) { showToast('Harap isi semua field!'); return; }
+        if (newPassword !== confirmPassword) { showToast('Password baru tidak cocok!'); return; }
+        if (newPassword.length < 4) { showToast('Password minimal 4 karakter!'); return; }
         try {
             const students = await fetchData('students');
-            let found = false;
-            let studentId = null;
-            
+            let found = false, studentId = null;
             for (const key in students) {
-                const student = students[key];
-                if (student.nim === nim && student.password_hash === oldPassword) {
-                    found = true;
-                    studentId = key;
-                    break;
+                const s = students[key];
+                if (s.nim === nim) {
+                    const hash = s.password_hash;
+                    let valid = false;
+                    if (hash && hash.startsWith('$2a$')) valid = bcrypt.compareSync(oldPassword, hash);
+                    else valid = (hash === oldPassword);
+                    if (valid) { found = true; studentId = key; break; }
                 }
             }
-            
-            if (!found) {
-                showToast('NIM atau Password lama salah!');
-                return;
-            }
-            
-            // Update password di Firebase
-            const patchData = { password_hash: newPassword };
-            const response = await fetch(`${FIREBASE_URL}students/${studentId}.json`, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(patchData)
-            });
-            
-            if (response.ok) {
-                showToast('Password berhasil diubah! Silakan login dengan password baru.');
-                closeChangePasswordModal();
-                if (currentUser && currentUser.nim === nim) {
-                    logout();
-                }
-            } else {
-                showToast('Gagal mengubah password');
-            }
-        } catch (error) {
-            console.error('Change password error:', error);
-            showToast('Error: ' + error.message);
-        }
+            if (!found) { showToast('NIM atau Password lama salah!'); return; }
+            const salt = bcrypt.genSaltSync(8);
+            const newHash = bcrypt.hashSync(newPassword, salt);
+            const res = await fetch(`${FIREBASE_URL}students/${studentId}.json`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password_hash: newHash }) });
+            if (res.ok) { showToast('Password berhasil diubah! Silakan login dengan password baru.'); closeChangePasswordModal(); if (currentUser && currentUser.nim === nim) logout(); }
+            else { showToast('Gagal mengubah password'); }
+        } catch(e) { console.error(e); showToast('Error: ' + e.message); }
     }
-    
-    // ========== LOAD ITEMS ==========
+
+    function openChangePasswordModal() { document.getElementById('changePasswordModal').style.display = 'flex'; if(currentUser) document.getElementById('modalNim').value = currentUser.nim; }
+    function closeChangePasswordModal() { document.getElementById('changePasswordModal').style.display = 'none'; }
+
+    // LOAD ITEMS
     async function loadItems() {
         try {
             const items = await fetchData('items');
             allItems = [];
-            for (const key in items) {
-                const item = items[key];
-                allItems.push({
-                    id: key,
-                    nama_barang: item.nama_barang || 'Tanpa Nama',
-                    status: item.status || 'tersedia'
-                });
-            }
+            for (const key in items) allItems.push({ id: key, nama_barang: items[key].nama_barang || 'Tanpa Nama', status: items[key].status || 'tersedia' });
             applySortAndPagination();
-        } catch (error) {
-            console.error('Load items error:', error);
-            document.getElementById('itemsList').innerHTML = '<div class="empty-state">Gagal memuat data barang</div>';
-        }
+        } catch(e) { console.error(e); document.getElementById('itemsList').innerHTML = '<div class="empty-state">Gagal memuat data barang</div>'; }
     }
-    
-    function extractNumber(namaBarang) {
-        const match = namaBarang.match(/\d+/);
-        return match ? parseInt(match[0]) : 0;
-    }
-    
-    function extractBaseName(namaBarang) {
-        return namaBarang.replace(/\s\d+$/, '').trim();
-    }
-    
+
+    function extractNumber(str) { const m = str.match(/\d+/); return m ? parseInt(m[0]) : 0; }
+    function extractBaseName(str) { return str.replace(/\s\d+$/, '').trim(); }
+
     function applySortAndPagination() {
         currentSort = document.getElementById('sortSelect').value;
         let sorted = [...allItems];
-        
-        switch(currentSort) {
-            case 'AZ':
-                sorted.sort((a, b) => {
-                    const baseA = extractBaseName(a.nama_barang || '');
-                    const baseB = extractBaseName(b.nama_barang || '');
-                    if (baseA !== baseB) return baseA.localeCompare(baseB);
-                    return extractNumber(a.nama_barang) - extractNumber(b.nama_barang);
-                });
-                break;
-            case 'ZA':
-                sorted.sort((a, b) => {
-                    const baseA = extractBaseName(a.nama_barang || '');
-                    const baseB = extractBaseName(b.nama_barang || '');
-                    if (baseA !== baseB) return baseB.localeCompare(baseA);
-                    return extractNumber(b.nama_barang) - extractNumber(a.nama_barang);
-                });
-                break;
-            case 'TERSEDIA':
-                sorted.sort((a, b) => {
-                    if (a.status === 'tersedia' && b.status !== 'tersedia') return -1;
-                    if (a.status !== 'tersedia' && b.status === 'tersedia') return 1;
-                    return (a.nama_barang || '').localeCompare(b.nama_barang || '');
-                });
-                break;
-            case 'DIPINJAM':
-                sorted.sort((a, b) => {
-                    if (a.status === 'dipinjam' && b.status !== 'dipinjam') return -1;
-                    if (a.status !== 'dipinjam' && b.status === 'dipinjam') return 1;
-                    return (a.nama_barang || '').localeCompare(b.nama_barang || '');
-                });
-                break;
-            case 'RUSAK':
-                sorted.sort((a, b) => {
-                    if (a.status === 'rusak' && b.status !== 'rusak') return -1;
-                    if (a.status !== 'rusak' && b.status === 'rusak') return 1;
-                    return (a.nama_barang || '').localeCompare(b.nama_barang || '');
-                });
-                break;
-        }
-        
-        const totalPages = Math.ceil(sorted.length / itemsPerPage);
-        const start = (currentPage - 1) * itemsPerPage;
-        const paginated = sorted.slice(start, start + itemsPerPage);
-        
-        renderItems(paginated);
-        
-        document.getElementById('pageInfo').innerHTML = `Halaman ${currentPage} dari ${totalPages || 1}`;
-        document.getElementById('prevBtn').disabled = currentPage === 1;
-        document.getElementById('nextBtn').disabled = currentPage === totalPages || totalPages === 0;
-    }
-    
-    function renderItems(items) {
+        if (currentSort === 'AZ') sorted.sort((a,b) => { const ba=extractBaseName(a.nama_barang||''), bb=extractBaseName(b.nama_barang||''); if(ba!==bb) return ba.localeCompare(bb); return extractNumber(a.nama_barang)-extractNumber(b.nama_barang); });
+        else if (currentSort === 'ZA') sorted.sort((a,b) => { const ba=extractBaseName(a.nama_barang||''), bb=extractBaseName(b.nama_barang||''); if(ba!==bb) return bb.localeCompare(ba); return extractNumber(b.nama_barang)-extractNumber(a.nama_barang); });
+        else if (currentSort === 'TERSEDIA') sorted.sort((a,b) => { if(a.status==='tersedia' && b.status!=='tersedia') return -1; if(a.status!=='tersedia' && b.status==='tersedia') return 1; return (a.nama_barang||'').localeCompare(b.nama_barang||''); });
+        else if (currentSort === 'DIPINJAM') sorted.sort((a,b) => { if(a.status==='dipinjam' && b.status!=='dipinjam') return -1; if(a.status!=='dipinjam' && b.status==='dipinjam') return 1; return (a.nama_barang||'').localeCompare(b.nama_barang||''); });
+        else if (currentSort === 'RUSAK') sorted.sort((a,b) => { if(a.status==='rusak' && b.status!=='rusak') return -1; if(a.status!=='rusak' && b.status==='rusak') return 1; return (a.nama_barang||'').localeCompare(b.nama_barang||''); });
+        const total = Math.ceil(sorted.length / itemsPerPage);
+        const start = (currentPage-1)*itemsPerPage;
+        const paginated = sorted.slice(start, start+itemsPerPage);
         const container = document.getElementById('itemsList');
-        if (items.length === 0) {
-            container.innerHTML = '<div class="empty-state">✨ Belum ada data barang ✨</div>';
-            return;
-        }
-        
-        container.innerHTML = items.map(item => {
-            let statusClass = 'status-tersedia';
-            let statusText = '🟢 Tersedia';
-            if (item.status === 'dipinjam') {
-                statusClass = 'status-dipinjam';
-                statusText = '🔴 Dipinjam';
-            } else if (item.status === 'rusak') {
-                statusClass = 'status-rusak';
-                statusText = '⚠️ Rusak';
-            }
-            return `
-                <div class="item-card">
-                    <div class="item-name">${escapeHtml(item.nama_barang)}</div>
-                    <span class="item-status ${statusClass}">${statusText}</span>
-                </div>
-            `;
-        }).join('');
+        if(paginated.length===0) { container.innerHTML = '<div class="empty-state">✨ Belum ada data barang ✨</div>'; }
+        else { container.innerHTML = paginated.map(item => { let cls='status-tersedia', txt='🟢 Tersedia'; if(item.status==='dipinjam'){ cls='status-dipinjam'; txt='🔴 Dipinjam'; } else if(item.status==='rusak'){ cls='status-rusak'; txt='⚠️ Rusak'; } return `<div class="item-card"><div class="item-name">${escapeHtml(item.nama_barang)}</div><span class="item-status ${cls}">${txt}</span></div>`; }).join(''); }
+        document.getElementById('pageInfo').innerHTML = `Halaman ${currentPage} dari ${total||1}`;
+        document.getElementById('prevBtn').disabled = currentPage===1;
+        document.getElementById('nextBtn').disabled = currentPage===total || total===0;
     }
-    
-    function prevPage() {
-        if (currentPage > 1) {
-            currentPage--;
-            applySortAndPagination();
-        }
-    }
-    
-    function nextPage() {
-        currentPage++;
-        applySortAndPagination();
-    }
-    
-    // ========== LOAD HISTORY ==========
+    function prevPage() { if(currentPage>1){ currentPage--; applySortAndPagination(); } }
+    function nextPage() { currentPage++; applySortAndPagination(); }
+
+    // LOAD HISTORY
     async function loadHistory() {
-        if (!currentUser) return;
+        if(!currentUser) return;
         try {
-            const transactions = await fetchData('transactions');
-            const userHistory = [];
-            for (const key in transactions) {
-                const trans = transactions[key];
-                if (trans.nim === currentUser.nim) {
-                    userHistory.push({
-                        id: key,
-                        item_name: trans.item_name || 'Unknown',
-                        status: trans.status || 'unknown',
-                        waktu_pinjam: trans.waktu_pinjam || trans.created_at
-                    });
-                }
-            }
-            userHistory.sort((a, b) => (b.waktu_pinjam || '').localeCompare(a.waktu_pinjam || ''));
-            renderHistory(userHistory);
-        } catch (error) {
-            console.error('Load history error:', error);
-            document.getElementById('historyList').innerHTML = '<div class="empty-state">Gagal memuat riwayat</div>';
-        }
+            const trans = await fetchData('transactions');
+            const list = [];
+            for(const key in trans) if(trans[key].nim === currentUser.nim) list.push({ item_name: trans[key].item_name || 'Unknown', status: trans[key].status || 'unknown', waktu_pinjam: trans[key].waktu_pinjam || trans[key].created_at });
+            list.sort((a,b)=> (b.waktu_pinjam||'').localeCompare(a.waktu_pinjam||''));
+            const container = document.getElementById('historyList');
+            if(list.length===0) container.innerHTML = '<div class="empty-state">✨ Belum ada riwayat peminjaman ✨</div>';
+            else container.innerHTML = list.map(h => `<div class="history-item"><div class="history-item-name">${escapeHtml(h.item_name)}</div><div class="history-date">📅 ${formatDate(h.waktu_pinjam)}</div><div class="history-status" style="color:${h.status==='active'?'#F57C00':'#2E7D32'}">${h.status==='active'?'🟡 Sedang Dipinjam':'✅ Selesai'}</div></div>`).join('');
+        } catch(e) { console.error(e); document.getElementById('historyList').innerHTML = '<div class="empty-state">Gagal memuat riwayat</div>'; }
     }
-    
-    function renderHistory(history) {
-        const container = document.getElementById('historyList');
-        if (history.length === 0) {
-            container.innerHTML = '<div class="empty-state">✨ Belum ada riwayat peminjaman ✨</div>';
-            return;
-        }
-        container.innerHTML = history.map(item => {
-            const statusText = item.status === 'active' ? '🟡 Sedang Dipinjam' : '✅ Selesai';
-            const statusColor = item.status === 'active' ? '#F57C00' : '#2E7D32';
-            const date = formatDate(item.waktu_pinjam);
-            return `
-                <div class="history-item">
-                    <div class="history-item-name">${escapeHtml(item.item_name)}</div>
-                    <div class="history-date">📅 ${date}</div>
-                    <div class="history-status" style="color: ${statusColor}">${statusText}</div>
-                </div>
-            `;
-        }).join('');
+
+    function showPage(p) {
+        document.getElementById('appContainer').style.display='none'; document.getElementById('listPage').style.display='none'; document.getElementById('historyPage').style.display='none'; document.getElementById('aturanPage').style.display='none';
+        if(p==='dashboard'){ document.getElementById('appContainer').style.display='block'; loadItems(); loadHistory(); }
+        else if(p==='listPage'){ document.getElementById('listPage').style.display='block'; currentPage=1; applySortAndPagination(); }
+        else if(p==='historyPage'){ document.getElementById('historyPage').style.display='block'; loadHistory(); }
+        else if(p==='aturanPage'){ document.getElementById('aturanPage').style.display='block'; }
     }
-    
-    function formatDate(dateString) {
-        try {
-            const date = new Date(dateString);
-            return date.toLocaleDateString('id-ID', {
-                day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
-            });
-        } catch { return dateString; }
-    }
-    
-    function escapeHtml(text) {
-        if (!text) return '';
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
-    }
-    
-    function showLoading(show) {
-        document.body.style.cursor = show ? 'wait' : 'default';
-    }
-    
-    function showPage(pageName) {
-        document.getElementById('appContainer').style.display = 'none';
-        document.getElementById('listPage').style.display = 'none';
-        document.getElementById('historyPage').style.display = 'none';
-        document.getElementById('aturanPage').style.display = 'none';
-        
-        if (pageName === 'dashboard') {
-            document.getElementById('appContainer').style.display = 'block';
-            loadItems();
-            loadHistory();
-        } else if (pageName === 'listPage') {
-            document.getElementById('listPage').style.display = 'block';
-            currentPage = 1;
-            applySortAndPagination();
-        } else if (pageName === 'historyPage') {
-            document.getElementById('historyPage').style.display = 'block';
-            loadHistory();
-        } else if (pageName === 'aturanPage') {
-            document.getElementById('aturanPage').style.display = 'block';
-        }
-    }
-    
-    function logout() {
-        currentUser = null;
-        localStorage.removeItem('currentUser');
-        document.getElementById('loginPage').style.display = 'flex';
-        document.getElementById('appContainer').style.display = 'none';
-        document.getElementById('loginNama').value = '';
-        document.getElementById('loginNim').value = '';
-        document.getElementById('loginPassword').value = '';
-    }
-    
-    function checkSavedLogin() {
-        const savedUser = localStorage.getItem('currentUser');
-        if (savedUser) {
-            try {
-                currentUser = JSON.parse(savedUser);
-                document.getElementById('welcomeName').innerHTML = `Halo, ${currentUser.nama}!`;
-                document.getElementById('welcomeNim').innerHTML = `NIM: ${currentUser.nim}`;
-                document.getElementById('loginPage').style.display = 'none';
-                document.getElementById('appContainer').style.display = 'block';
-                loadItems();
-                loadHistory();
-            } catch(e) { console.error(e); }
-        }
-    }
-    
-    checkSavedLogin();
+
+    function logout() { currentUser=null; localStorage.removeItem('currentUser'); document.getElementById('loginPage').style.display='flex'; document.getElementById('appContainer').style.display='none'; document.getElementById('loginNama').value=''; document.getElementById('loginNim').value=''; document.getElementById('loginPassword').value=''; }
+
+    const saved = localStorage.getItem('currentUser');
+    if(saved) { try { currentUser = JSON.parse(saved); document.getElementById('welcomeName').innerHTML = `Halo, ${currentUser.nama}!`; document.getElementById('welcomeNim').innerHTML = `NIM: ${currentUser.nim}`; document.getElementById('loginPage').style.display = 'none'; document.getElementById('appContainer').style.display = 'block'; loadItems(); loadHistory(); } catch(e){} }
 </script>
 </body>
 </html>
