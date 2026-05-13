@@ -8,8 +8,6 @@
     <meta name="apple-mobile-web-app-title" content="Lab Inventory">
     <meta name="theme-color" content="#1976D2">
     <title>Lab Inventory - Mahasiswa</title>
-    <!-- bcryptjs library from cdnjs (lebih stabil) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bcryptjs/2.4.3/bcrypt.min.js"></script>
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
@@ -188,6 +186,16 @@
     const itemsPerPage = 10;
     let currentSort = "AZ";
 
+    // 🔐 FUNGSI SHA-256 (Built-in browser, tanpa library)
+    async function sha256(message) {
+        const encoder = new TextEncoder();
+        const data = encoder.encode(message);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        return hashHex;
+    }
+
     function showLoading(show) { document.getElementById('loadingOverlay').style.display = show ? 'flex' : 'none'; }
     function showToast(msg) { const t = document.createElement('div'); t.className = 'toast'; t.innerText = msg; document.body.appendChild(t); setTimeout(() => t.remove(), 3000); }
     function escapeHtml(t) { if (!t) return ''; const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
@@ -195,51 +203,27 @@
     function extractNumber(str) { const m = str.match(/\d+/); return m ? parseInt(m[0]) : 0; }
     function extractBaseName(str) { return str.replace(/\s\d+$/, '').trim(); }
 
-    // Fungsi untuk menunggu bcrypt siap
-    function waitForBcrypt() {
-        return new Promise((resolve) => {
-            if (typeof bcrypt !== 'undefined') {
-                console.log('bcrypt already loaded');
-                resolve();
-            } else {
-                console.log('waiting for bcrypt...');
-                const check = setInterval(() => {
-                    if (typeof bcrypt !== 'undefined') {
-                        clearInterval(check);
-                        console.log('bcrypt loaded');
-                        resolve();
-                    }
-                }, 100);
-            }
-        });
-    }
-
-    // LOGIN
+    // LOGIN dengan SHA-256
     async function handleLogin() {
         const nama = document.getElementById('loginNama').value.trim();
         const nim = document.getElementById('loginNim').value.trim();
         const password = document.getElementById('loginPassword').value.trim();
         if (!nama || !nim || !password) { showToast('Harap isi semua field!'); return; }
         
-        await waitForBcrypt();
         showLoading(true);
         
         try {
+            // Hash password yang dimasukkan
+            const hashedPassword = await sha256(password);
+            
             const snapshot = await database.ref('students').orderByChild('nim').equalTo(nim).once('value');
             let found = false;
             snapshot.forEach((child) => {
                 const s = child.val();
                 if (s.nim === nim && s.nama.toLowerCase() === nama.toLowerCase()) {
-                    const hash = s.password_hash;
-                    let match = false;
-                    try {
-                        if (hash && hash.startsWith('$2a$')) {
-                            match = bcrypt.compareSync(password, hash);
-                        } else {
-                            match = (hash === password);
-                        }
-                    } catch(e) { console.error('Bcrypt error:', e); match = false; }
-                    if (match) {
+                    const hashDb = s.password_hash;
+                    // Bandingkan hash
+                    if (hashDb === hashedPassword) {
                         found = true;
                         currentUser = { nim: s.nim, nama: s.nama, email: s.email, key: child.key };
                     }
@@ -265,7 +249,7 @@
         showLoading(false);
     }
 
-    // CHANGE PASSWORD
+    // CHANGE PASSWORD dengan SHA-256
     async function changePassword() {
         const nim = document.getElementById('modalNim').value.trim();
         const oldPassword = document.getElementById('modalOldPassword').value.trim();
@@ -275,27 +259,25 @@
         if (newPassword !== confirmPassword) { showToast('Password baru tidak cocok!'); return; }
         if (newPassword.length < 4) { showToast('Password minimal 4 karakter!'); return; }
         
-        await waitForBcrypt();
         showLoading(true);
         
         try {
+            const hashedOld = await sha256(oldPassword);
+            
             const snapshot = await database.ref('students').orderByChild('nim').equalTo(nim).once('value');
             let found = false, studentId = null;
             snapshot.forEach((child) => {
                 const s = child.val();
-                const hash = s.password_hash;
-                let valid = false;
-                try {
-                    if (hash && hash.startsWith('$2a$')) valid = bcrypt.compareSync(oldPassword, hash);
-                    else valid = (hash === oldPassword);
-                } catch(e) { valid = false; }
-                if (valid) { found = true; studentId = child.key; }
+                if (s.nim === nim && s.password_hash === hashedOld) {
+                    found = true;
+                    studentId = child.key;
+                }
                 return !found;
             });
             if (!found) { showToast('NIM atau Password lama salah!'); showLoading(false); return; }
-            const salt = bcrypt.genSaltSync(8);
-            const newHash = bcrypt.hashSync(newPassword, salt);
-            await database.ref('students').child(studentId).update({ password_hash: newHash });
+            
+            const hashedNew = await sha256(newPassword);
+            await database.ref('students').child(studentId).update({ password_hash: hashedNew });
             showToast('Password berhasil diubah! Silakan login dengan password baru.');
             closeChangePasswordModal();
             if (currentUser && currentUser.nim === nim) logout();
