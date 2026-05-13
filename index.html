@@ -9,6 +9,9 @@
     <meta name="theme-color" content="#1976D2">
     <title>Lab Inventory - Mahasiswa</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bcryptjs/2.4.3/bcrypt.min.js"></script>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -92,7 +95,7 @@
         .btn-save { background: #1976D2; color: white; }
         .btn-cancel { background: #EF4444; color: white; }
 
-        /* Toast */
+        /* Toast & Loading */
         .toast { position: fixed; bottom: 20px; left: 20px; right: 20px; background: #333; color: white; padding: 12px; border-radius: 12px; text-align: center; z-index: 1100; animation: fadeInUp 0.3s ease; }
         .loading { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 1200; }
         .loading-spinner { width: 50px; height: 50px; border: 5px solid white; border-top-color: #1976D2; border-radius: 50%; animation: spin 1s linear infinite; }
@@ -102,7 +105,6 @@
 </head>
 <body>
 
-<!-- LOADING -->
 <div id="loadingOverlay" style="display:none;" class="loading"><div class="loading-spinner"></div></div>
 
 <!-- LOGIN PAGE -->
@@ -112,7 +114,7 @@
         <h1 class="login-title">Lab Inventory System</h1>
         <p class="login-subtitle">Akses untuk Mahasiswa</p>
         <div class="input-group"><label>Nama Lengkap</label><input type="text" id="loginNama" placeholder="Masukkan nama lengkap"></div>
-        <div class="input-group"><label>NIM</label><input type="text" id="loginNim" placeholder="Masukkan NIM" inputmode="numeric"></div>
+        <div class="input-group"><label>NIM</label><input type="text" id="loginNim" placeholder="Masukkan NIM"></div>
         <div class="input-group"><label>Password</label><input type="password" id="loginPassword" placeholder="Masukkan password"></div>
         <button class="btn-login" onclick="handleLogin()">Login</button>
         <button class="btn-secondary" onclick="openChangePasswordModal()">Lupa / Ganti Password</button>
@@ -177,7 +179,15 @@
 </div>
 
 <script>
-    const FIREBASE_URL = "https://lab-inventory-smart-system-default-rtdb.asia-southeast1.firebasedatabase.app/";
+    // Konfigurasi Firebase
+    const firebaseConfig = {
+        databaseURL: "https://lab-inventory-smart-system-default-rtdb.asia-southeast1.firebasedatabase.app/"
+    };
+    
+    // Inisialisasi Firebase
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+    
     let currentUser = null;
     let allItems = [];
     let currentPage = 1;
@@ -189,17 +199,6 @@
     function escapeHtml(t) { if (!t) return ''; const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
     function formatDate(ds) { try { const d = new Date(ds); return d.toLocaleDateString('id-ID', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' }); } catch(e) { return ds; } }
 
-    async function fetchData(path) {
-        try {
-            const res = await fetch(`${FIREBASE_URL}${path}.json`);
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            return await res.json();
-        } catch(e) {
-            console.error(`Fetch error for ${path}:`, e);
-            throw e;
-        }
-    }
-
     // LOGIN
     async function handleLogin() {
         const nama = document.getElementById('loginNama').value.trim();
@@ -209,10 +208,10 @@
         
         showLoading(true);
         try {
-            const students = await fetchData('students');
+            const snapshot = await database.ref('students').orderByChild('nim').equalTo(nim).once('value');
             let found = false;
-            for (const key in students) {
-                const s = students[key];
+            snapshot.forEach((child) => {
+                const s = child.val();
                 if (s.nim === nim && s.nama.toLowerCase() === nama.toLowerCase()) {
                     const hash = s.password_hash;
                     let match = false;
@@ -223,11 +222,11 @@
                     }
                     if (match) {
                         found = true;
-                        currentUser = { nim: s.nim, nama: s.nama, email: s.email, key: key };
-                        break;
+                        currentUser = { nim: s.nim, nama: s.nama, email: s.email, key: child.key };
                     }
                 }
-            }
+                return !found;
+            });
             if (found) {
                 localStorage.setItem('currentUser', JSON.stringify(currentUser));
                 document.getElementById('welcomeName').innerHTML = `Halo, ${currentUser.nama}!`;
@@ -242,7 +241,7 @@
             }
         } catch(e) {
             console.error(e);
-            showToast('Gagal terhubung ke server. Periksa koneksi internet Anda.');
+            showToast('Gagal terhubung ke server: ' + e.message);
         }
         showLoading(false);
     }
@@ -259,42 +258,40 @@
         
         showLoading(true);
         try {
-            const students = await fetchData('students');
+            const snapshot = await database.ref('students').orderByChild('nim').equalTo(nim).once('value');
             let found = false, studentId = null;
-            for (const key in students) {
-                const s = students[key];
-                if (s.nim === nim) {
-                    const hash = s.password_hash;
-                    let valid = false;
-                    if (hash && hash.startsWith('$2a$')) valid = bcrypt.compareSync(oldPassword, hash);
-                    else valid = (hash === oldPassword);
-                    if (valid) { found = true; studentId = key; break; }
-                }
-            }
+            snapshot.forEach((child) => {
+                const s = child.val();
+                const hash = s.password_hash;
+                let valid = false;
+                if (hash && hash.startsWith('$2a$')) valid = bcrypt.compareSync(oldPassword, hash);
+                else valid = (hash === oldPassword);
+                if (valid) { found = true; studentId = child.key; }
+                return !found;
+            });
             if (!found) { showToast('NIM atau Password lama salah!'); showLoading(false); return; }
             const salt = bcrypt.genSaltSync(8);
             const newHash = bcrypt.hashSync(newPassword, salt);
-            const res = await fetch(`${FIREBASE_URL}students/${studentId}.json`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password_hash: newHash }) });
-            if (res.ok) {
-                showToast('Password berhasil diubah! Silakan login dengan password baru.');
-                closeChangePasswordModal();
-                if (currentUser && currentUser.nim === nim) logout();
-            } else {
-                showToast('Gagal mengubah password');
-            }
+            await database.ref('students').child(studentId).update({ password_hash: newHash });
+            showToast('Password berhasil diubah! Silakan login dengan password baru.');
+            closeChangePasswordModal();
+            if (currentUser && currentUser.nim === nim) logout();
         } catch(e) { console.error(e); showToast('Error: ' + e.message); }
         showLoading(false);
     }
 
     function openChangePasswordModal() { document.getElementById('changePasswordModal').style.display = 'flex'; if(currentUser) document.getElementById('modalNim').value = currentUser.nim; }
-    function closeChangePasswordModal() { document.getElementById('changePasswordModal').style.display = 'none'; document.getElementById('modalNim').value = ''; document.getElementById('modalOldPassword').value = ''; document.getElementById('modalNewPassword').value = ''; document.getElementById('modalConfirmPassword').value = ''; }
+    function closeChangePasswordModal() { document.getElementById('changePasswordModal').style.display = 'none'; }
 
     // LOAD ITEMS
     async function loadItems() {
         try {
-            const items = await fetchData('items');
+            const snapshot = await database.ref('items').once('value');
             allItems = [];
-            for (const key in items) allItems.push({ id: key, nama_barang: items[key].nama_barang || 'Tanpa Nama', status: items[key].status || 'tersedia' });
+            snapshot.forEach((child) => {
+                const item = child.val();
+                allItems.push({ id: child.key, nama_barang: item.nama_barang || 'Tanpa Nama', status: item.status || 'tersedia' });
+            });
             applySortAndPagination();
         } catch(e) { console.error(e); document.getElementById('itemsList').innerHTML = '<div class="empty-state">Gagal memuat data barang</div>'; }
     }
@@ -327,9 +324,12 @@
     async function loadHistory() {
         if(!currentUser) return;
         try {
-            const trans = await fetchData('transactions');
+            const snapshot = await database.ref('transactions').orderByChild('nim').equalTo(currentUser.nim).once('value');
             const list = [];
-            for(const key in trans) if(trans[key].nim === currentUser.nim) list.push({ item_name: trans[key].item_name || 'Unknown', status: trans[key].status || 'unknown', waktu_pinjam: trans[key].waktu_pinjam || trans[key].created_at });
+            snapshot.forEach((child) => {
+                const t = child.val();
+                list.push({ item_name: t.item_name || 'Unknown', status: t.status || 'unknown', waktu_pinjam: t.waktu_pinjam || t.created_at });
+            });
             list.sort((a,b)=> (b.waktu_pinjam||'').localeCompare(a.waktu_pinjam||''));
             const container = document.getElementById('historyList');
             if(list.length===0) container.innerHTML = '<div class="empty-state">✨ Belum ada riwayat peminjaman ✨</div>';
