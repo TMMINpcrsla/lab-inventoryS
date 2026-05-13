@@ -8,7 +8,8 @@
     <meta name="apple-mobile-web-app-title" content="Lab Inventory">
     <meta name="theme-color" content="#1976D2">
     <title>Lab Inventory - Mahasiswa</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bcryptjs/2.4.3/bcrypt.min.js"></script>
+    <!-- bcryptjs library -->
+    <script src="https://cdn.jsdelivr.net/npm/bcryptjs@2.4.3/bcrypt.min.js"></script>
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
@@ -17,7 +18,6 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', sans-serif; background-color: #F5F7FA; color: #333; min-height: 100vh; }
 
-        /* Login Page */
         .login-container { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; background: linear-gradient(135deg, #1976D2, #1565C0); }
         .login-card { background: white; border-radius: 24px; padding: 32px; width: 100%; max-width: 400px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
         .login-icon { text-align: center; font-size: 56px; margin-bottom: 16px; }
@@ -33,7 +33,6 @@
         .btn-secondary:hover { background: #E3F2FD; }
         .login-footer { text-align: center; font-size: 11px; color: #999; margin-top: 24px; }
 
-        /* Dashboard */
         .app-container { display: none; min-height: 100vh; background: #F5F7FA; }
         .app-header { background: linear-gradient(135deg, #1976D2, #1565C0); padding: 20px; padding-top: 50px; color: white; }
         .app-header h2 { font-size: 20px; margin-bottom: 4px; }
@@ -52,7 +51,6 @@
         .btn-logout { margin: 0 20px 30px 20px; padding: 14px; background: #EF4444; color: white; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; width: calc(100% - 40px); }
         .btn-change-password { margin: 0 20px 16px 20px; padding: 12px; background: transparent; color: #1976D2; border: 1px solid #1976D2; border-radius: 12px; font-weight: 500; cursor: pointer; width: calc(100% - 40px); }
 
-        /* Pages */
         .page { display: none; min-height: 100vh; background: #F5F7FA; }
         .page-header { background: #1976D2; padding: 20px; padding-top: 50px; display: flex; align-items: center; gap: 16px; }
         .back-btn { background: rgba(255,255,255,0.2); border: none; width: 40px; height: 40px; border-radius: 12px; font-size: 20px; cursor: pointer; color: white; }
@@ -72,20 +70,17 @@
         .page-info { font-size: 13px; color: #666; }
         .empty-state { text-align: center; padding: 60px 20px; color: #999; }
 
-        /* History */
         .history-item { background: white; border-radius: 16px; padding: 16px; margin-bottom: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         .history-item-name { font-weight: 600; font-size: 15px; margin-bottom: 8px; }
         .history-date { font-size: 11px; color: #999; margin-bottom: 4px; }
         .history-status { font-size: 12px; font-weight: 500; }
 
-        /* Aturan */
         .aturan-content { padding: 20px; }
         .aturan-card { background: white; border-radius: 16px; padding: 20px; margin-bottom: 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         .aturan-title { font-weight: 700; font-size: 16px; color: #1976D2; margin-bottom: 8px; }
         .aturan-text { font-size: 13px; color: #444; line-height: 1.5; }
         .warning-card { background: #FFF3E0; border-left: 4px solid #F57C00; margin-bottom: 20px; }
 
-        /* Modal */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1000; }
         .modal-content { background: white; border-radius: 24px; padding: 24px; width: 90%; max-width: 400px; }
         .modal-content h3 { margin-bottom: 20px; color: #1976D2; }
@@ -95,7 +90,6 @@
         .btn-save { background: #1976D2; color: white; }
         .btn-cancel { background: #EF4444; color: white; }
 
-        /* Toast & Loading */
         .toast { position: fixed; bottom: 20px; left: 20px; right: 20px; background: #333; color: white; padding: 12px; border-radius: 12px; text-align: center; z-index: 1100; animation: fadeInUp 0.3s ease; }
         .loading { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 1200; }
         .loading-spinner { width: 50px; height: 50px; border: 5px solid white; border-top-color: #1976D2; border-radius: 50%; animation: spin 1s linear infinite; }
@@ -198,6 +192,27 @@
     function showToast(msg) { const t = document.createElement('div'); t.className = 'toast'; t.innerText = msg; document.body.appendChild(t); setTimeout(() => t.remove(), 3000); }
     function escapeHtml(t) { if (!t) return ''; const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
     function formatDate(ds) { try { const d = new Date(ds); return d.toLocaleDateString('id-ID', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' }); } catch(e) { return ds; } }
+    function extractNumber(str) { const m = str.match(/\d+/); return m ? parseInt(m[0]) : 0; }
+    function extractBaseName(str) { return str.replace(/\s\d+$/, '').trim(); }
+
+    // cek apakah bcrypt sudah siap
+    let bcryptReady = false;
+    function waitForBcrypt() {
+        return new Promise((resolve) => {
+            if (typeof bcrypt !== 'undefined') {
+                bcryptReady = true;
+                resolve();
+            } else {
+                const check = setInterval(() => {
+                    if (typeof bcrypt !== 'undefined') {
+                        clearInterval(check);
+                        bcryptReady = true;
+                        resolve();
+                    }
+                }, 100);
+            }
+        });
+    }
 
     // LOGIN
     async function handleLogin() {
@@ -206,7 +221,9 @@
         const password = document.getElementById('loginPassword').value.trim();
         if (!nama || !nim || !password) { showToast('Harap isi semua field!'); return; }
         
+        await waitForBcrypt();
         showLoading(true);
+        
         try {
             const snapshot = await database.ref('students').orderByChild('nim').equalTo(nim).once('value');
             let found = false;
@@ -215,11 +232,13 @@
                 if (s.nim === nim && s.nama.toLowerCase() === nama.toLowerCase()) {
                     const hash = s.password_hash;
                     let match = false;
-                    if (hash && hash.startsWith('$2a$')) {
-                        match = bcrypt.compareSync(password, hash);
-                    } else {
-                        match = (hash === password);
-                    }
+                    try {
+                        if (hash && hash.startsWith('$2a$')) {
+                            match = bcrypt.compareSync(password, hash);
+                        } else {
+                            match = (hash === password);
+                        }
+                    } catch(e) { console.error('Bcrypt error:', e); match = false; }
                     if (match) {
                         found = true;
                         currentUser = { nim: s.nim, nama: s.nama, email: s.email, key: child.key };
@@ -256,7 +275,9 @@
         if (newPassword !== confirmPassword) { showToast('Password baru tidak cocok!'); return; }
         if (newPassword.length < 4) { showToast('Password minimal 4 karakter!'); return; }
         
+        await waitForBcrypt();
         showLoading(true);
+        
         try {
             const snapshot = await database.ref('students').orderByChild('nim').equalTo(nim).once('value');
             let found = false, studentId = null;
@@ -264,8 +285,10 @@
                 const s = child.val();
                 const hash = s.password_hash;
                 let valid = false;
-                if (hash && hash.startsWith('$2a$')) valid = bcrypt.compareSync(oldPassword, hash);
-                else valid = (hash === oldPassword);
+                try {
+                    if (hash && hash.startsWith('$2a$')) valid = bcrypt.compareSync(oldPassword, hash);
+                    else valid = (hash === oldPassword);
+                } catch(e) { valid = false; }
                 if (valid) { found = true; studentId = child.key; }
                 return !found;
             });
@@ -295,9 +318,6 @@
             applySortAndPagination();
         } catch(e) { console.error(e); document.getElementById('itemsList').innerHTML = '<div class="empty-state">Gagal memuat data barang</div>'; }
     }
-
-    function extractNumber(str) { const m = str.match(/\d+/); return m ? parseInt(m[0]) : 0; }
-    function extractBaseName(str) { return str.replace(/\s\d+$/, '').trim(); }
 
     function applySortAndPagination() {
         currentSort = document.getElementById('sortSelect').value;
@@ -350,6 +370,7 @@
 
     function logout() { currentUser=null; localStorage.removeItem('currentUser'); document.getElementById('loginPage').style.display='flex'; document.getElementById('appContainer').style.display='none'; document.getElementById('loginNama').value=''; document.getElementById('loginNim').value=''; document.getElementById('loginPassword').value=''; }
 
+    // Check saved login
     const saved = localStorage.getItem('currentUser');
     if(saved) {
         try {
