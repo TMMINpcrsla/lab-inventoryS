@@ -16,6 +16,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', sans-serif; background-color: #F5F7FA; color: #333; min-height: 100vh; }
 
+        /* Login Page */
         .login-container { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; background: linear-gradient(135deg, #1976D2, #1565C0); }
         .login-card { background: white; border-radius: 24px; padding: 32px; width: 100%; max-width: 400px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
         .login-icon { text-align: center; font-size: 56px; margin-bottom: 16px; }
@@ -30,54 +31,54 @@
         .btn-secondary { width: 100%; padding: 12px; background: transparent; color: #1976D2; border: 1.5px solid #1976D2; border-radius: 12px; font-size: 14px; font-weight: 500; cursor: pointer; margin-top: 12px; }
         .btn-secondary:hover { background: #E3F2FD; }
         .login-footer { text-align: center; font-size: 11px; color: #999; margin-top: 24px; }
+        
+        /* Terms Checkbox */
+        .terms-container { margin: 16px 0; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .terms-container input { width: 18px; height: 18px; margin: 0; }
+        .terms-container label { font-size: 13px; color: #555; margin: 0; }
+        .terms-link { color: #1976D2; text-decoration: none; font-weight: 500; cursor: pointer; }
+        .terms-link:hover { text-decoration: underline; }
 
-        .app-container { display: none; min-height: 100vh; background: #F5F7FA; }
-        .app-header { background: linear-gradient(135deg, #1976D2, #1565C0); padding: 20px; padding-top: 50px; color: white; }
+        /* Dashboard */
+        .app-container { display: none; min-height: 100vh; background: #F5F7FA; flex-direction: column; }
+        .app-header { background: linear-gradient(135deg, #1976D2, #1565C0); padding: 24px; padding-top: 50px; color: white; }
         .app-header h2 { font-size: 20px; margin-bottom: 4px; }
-        .app-header p { font-size: 13px; opacity: 0.8; }
-        .menu-grid { padding: 20px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
-        .menu-card { background: white; border-radius: 20px; padding: 24px 16px; text-align: center; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-        .menu-card:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
-        .menu-icon { font-size: 40px; margin-bottom: 12px; }
-        .menu-title { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
-        .menu-desc { font-size: 11px; color: #999; }
-        .info-card { background: white; margin: 0 20px 20px 20px; padding: 16px; border-radius: 16px; display: flex; align-items: center; gap: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-        .info-icon { font-size: 28px; }
-        .info-text { flex: 1; }
-        .info-text h4 { font-size: 13px; margin-bottom: 4px; }
-        .info-text p { font-size: 11px; color: #666; }
-        .btn-logout { margin: 0 20px 30px 20px; padding: 14px; background: #EF4444; color: white; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; width: calc(100% - 40px); }
+        .app-header p { font-size: 13px; opacity: 0.8; margin-bottom: 8px; }
+        .app-header .app-subtitle { font-size: 12px; opacity: 0.6; margin-top: 4px; }
+        
+        /* Menu Cards Vertical */
+        .menu-vertical { flex: 1; display: flex; flex-direction: column; padding: 16px; gap: 16px; }
+        .menu-card-vertical { background: white; border-radius: 20px; padding: 32px 24px; text-align: center; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(0,0,0,0.05); flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .menu-card-vertical:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+        .menu-icon { font-size: 48px; margin-bottom: 16px; }
+        .menu-title { font-weight: 700; font-size: 18px; margin-bottom: 8px; }
+        .menu-desc { font-size: 13px; color: #999; }
+        .btn-logout { margin: 16px; padding: 14px; background: #EF4444; color: white; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; }
 
-        .page { display: none; min-height: 100vh; background: #F5F7FA; }
+        /* List Barang Page */
+        .page { display: none; min-height: 100vh; background: #F5F7FA; flex-direction: column; }
         .page-header { background: #1976D2; padding: 20px; padding-top: 50px; display: flex; align-items: center; gap: 16px; }
         .back-btn { background: rgba(255,255,255,0.2); border: none; width: 40px; height: 40px; border-radius: 12px; font-size: 20px; cursor: pointer; color: white; }
         .page-header h1 { color: white; font-size: 20px; flex: 1; }
         .sort-container { padding: 16px; background: white; margin: 16px; border-radius: 12px; display: flex; align-items: center; gap: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         .sort-select { flex: 1; padding: 10px; border: 1px solid #E0E0E0; border-radius: 10px; font-size: 13px; }
-        .items-list { padding: 0 16px; }
-        .item-card { background: white; border-radius: 16px; padding: 16px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .item-name { font-weight: 600; font-size: 15px; }
-        .item-status { font-size: 12px; padding: 4px 10px; border-radius: 20px; }
-        .status-tersedia { background: #E8F5E9; color: #2E7D32; }
-        .status-dipinjam { background: #FFEBEE; color: #C62828; }
-        .status-rusak { background: #FFF3E0; color: #F57C00; }
-        .pagination { display: flex; justify-content: center; align-items: center; gap: 16px; padding: 20px; }
-        .page-btn { background: #1976D2; color: white; border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer; }
-        .page-btn:disabled { background: #CCC; cursor: not-allowed; }
-        .page-info { font-size: 13px; color: #666; }
+        .items-list { padding: 0 16px; flex: 1; }
+        .item-card { background: white; border-radius: 16px; padding: 16px; margin-bottom: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .item-name { font-weight: 700; font-size: 16px; color: #1976D2; margin-bottom: 12px; }
+        .stats-row { display: flex; justify-content: space-between; margin-top: 8px; }
+        .stat { font-size: 14px; }
+        .stat-stok { color: #388E3C; font-weight: bold; }
+        .stat-dipinjam { color: #F57C00; }
+        .stat-rusak { color: #D32F2F; }
         .empty-state { text-align: center; padding: 60px 20px; color: #999; }
 
+        /* History Page */
         .history-item { background: white; border-radius: 16px; padding: 16px; margin-bottom: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         .history-item-name { font-weight: 600; font-size: 15px; margin-bottom: 8px; }
-        .history-date { font-size: 11px; color: #999; margin-bottom: 4px; }
-        .history-status { font-size: 12px; font-weight: 500; }
+        .history-dates { font-size: 12px; color: #666; margin-bottom: 4px; }
+        .history-status { font-size: 12px; font-weight: 500; margin-top: 8px; }
 
-        .aturan-content { padding: 20px; }
-        .aturan-card { background: white; border-radius: 16px; padding: 20px; margin-bottom: 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .aturan-title { font-weight: 700; font-size: 16px; color: #1976D2; margin-bottom: 8px; }
-        .aturan-text { font-size: 13px; color: #444; line-height: 1.5; }
-        .warning-card { background: #FFF3E0; border-left: 4px solid #F57C00; margin-bottom: 20px; }
-
+        /* Modal */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1000; }
         .modal-content { background: white; border-radius: 24px; padding: 24px; width: 90%; max-width: 400px; }
         .modal-content h3 { margin-bottom: 20px; color: #1976D2; }
@@ -87,6 +88,7 @@
         .btn-save { background: #1976D2; color: white; }
         .btn-cancel { background: #EF4444; color: white; }
 
+        /* Toast & Loading */
         .toast { position: fixed; bottom: 20px; left: 20px; right: 20px; background: #333; color: white; padding: 12px; border-radius: 12px; text-align: center; z-index: 1100; animation: fadeInUp 0.3s ease; }
         .loading { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 1200; }
         .loading-spinner { width: 50px; height: 50px; border: 5px solid white; border-top-color: #1976D2; border-radius: 50%; animation: spin 1s linear infinite; }
@@ -107,9 +109,37 @@
         <div class="input-group"><label>Nama Lengkap</label><input type="text" id="loginNama" placeholder="Masukkan nama lengkap"></div>
         <div class="input-group"><label>NIM</label><input type="text" id="loginNim" placeholder="Masukkan NIM"></div>
         <div class="input-group"><label>Password</label><input type="password" id="loginPassword" placeholder="Masukkan password"></div>
+        
+        <div class="terms-container">
+            <input type="checkbox" id="cbTerms">
+            <label>Saya menyetujui</label>
+            <span class="terms-link" onclick="openTermsModal()">Tata Tertib Laboratorium</span>
+        </div>
+        
         <button class="btn-login" onclick="handleLogin()">Login</button>
         <button class="btn-secondary" onclick="openChangePasswordModal()">Lupa / Ganti Password</button>
         <div class="login-footer">*Akun didaftarkan melalui Laboran | Password awal = NIM</div>
+    </div>
+</div>
+
+<!-- TERMS MODAL -->
+<div id="termsModal" class="modal">
+    <div class="modal-content" style="max-width: 500px; max-height: 80vh; overflow-y: auto;">
+        <h3>📋 Tata Tertib Laboratorium</h3>
+        <div style="font-size: 13px; line-height: 1.6; margin: 16px 0;">
+            <p><strong>⚠️ PERINGATAN</strong><br>Kelalaian terhadap tata tertib dapat dikenakan sanksi sesuai ketentuan yang berlaku.</p>
+            <p style="margin-top: 12px;"><strong>1. Penggunaan Dalam Kampus</strong><br>Barang laboratorium hanya diperbolehkan digunakan di area kampus.</p>
+            <p><strong>2. Proses Peminjaman & Pengembalian</strong><br>Setiap mahasiswa diwajibkan melakukan identifikasi diri menggunakan KTM serta memindai alat/barang melalui sensor yang telah disediakan. Pastikan data mahasiswa dan alat/barang terverifikasi dengan akurat. Sistem akan mengirimkan notifikasi real-time sebagai bukti transaksi.</p>
+            <p><strong>3. Durasi Peminjaman</strong><br>Peminjaman barang laboratorium disarankan untuk jangka waktu 1 hari. Jika memerlukan waktu lebih dari 1 hari, maka peminjam harus berkoordinasi terlebih dahulu dengan dosen pembimbing.</p>
+            <p><strong>4. Pengajuan Peminjaman Jangka Panjang</strong><br>Jika dosen pembimbing mengizinkan peminjaman jangka panjang, maka peminjam wajib mengirimkan email kepada kepala laboratorium dan cc kepala program.</p>
+            <p><strong>5. Batas Maksimal Peminjaman</strong><br>Batas maksimal peminjaman barang laboratorium adalah 1 bulan.</p>
+            <p><strong>6. Perpanjangan Peminjaman</strong><br>Setelah 1 bulan, jika masih memerlukan barang, peminjam perlu mengajukan permohonan ulang dari proses awal.</p>
+            <p><strong>7. Pengembalian Barang</strong><br>Peminjam wajib mengembalikan barang yang dipinjam kepada laboran secara langsung.</p>
+            <p><strong>8. Tanggung Jawab</strong><br>Jika merusak atau menghilangkan barang, peminjam wajib mengganti rugi senilai harga barang tersebut atau mengganti dengan barang baru yang sama.</p>
+            <p style="margin-top: 12px; font-style: italic;">Semua peminjam wajib mematuhi peraturan ini demi kelancaran dan keamanan.</p>
+            <p style="margin-top: 8px;">Tertanda,<br>Laboratorium</p>
+        </div>
+        <div class="modal-buttons"><button class="btn-save" onclick="closeTermsModal()">Tutup</button></div>
     </div>
 </div>
 
@@ -125,104 +155,108 @@
     </div>
 </div>
 
-<!-- DASHBOARD (Tanpa Tombol Ganti Password) -->
+<!-- DASHBOARD - Vertical Layout -->
 <div id="appContainer" class="app-container">
-    <div class="app-header"><h2 id="welcomeName">Selamat Datang,</h2><p id="welcomeNim">NIM: -</p></div>
-    <div class="menu-grid">
-        <div class="menu-card" onclick="showPage('listPage')"><div class="menu-icon">📦</div><div class="menu-title">Daftar Alat</div><div class="menu-desc">Lihat semua alat lab</div></div>
-        <div class="menu-card" onclick="showPage('historyPage')"><div class="menu-icon">📋</div><div class="menu-title">Peminjaman</div><div class="menu-desc">Riwayat peminjaman</div></div>
-        <div class="menu-card" onclick="showPage('aturanPage')"><div class="menu-icon">📜</div><div class="menu-title">Aturan Lab</div><div class="menu-desc">Tata tertib lab</div></div>
+    <div class="app-header">
+        <h2 id="welcomeName">Selamat Datang,</h2>
+        <p id="welcomeNim">NIM: -</p>
+        <div class="app-subtitle">Lab Inventory System</div>
     </div>
-    <div class="info-card"><div class="info-icon">ℹ️</div><div class="info-text"><h4>Informasi</h4><p>Pastikan data diri Anda sudah benar sebelum melakukan peminjaman</p></div></div>
+    
+    <div class="menu-vertical">
+        <div class="menu-card-vertical" onclick="showPage('listPage')">
+            <div class="menu-icon">📦</div>
+            <div class="menu-title">Daftar Alat</div>
+            <div class="menu-desc">Lihat stok alat lab</div>
+        </div>
+        
+        <div class="menu-card-vertical" onclick="showPage('historyPage')">
+            <div class="menu-icon">📋</div>
+            <div class="menu-title">Riwayat Peminjaman</div>
+            <div class="menu-desc">Lihat peminjaman Anda</div>
+        </div>
+    </div>
+    
     <button class="btn-logout" onclick="logout()">LOGOUT</button>
 </div>
 
-<!-- LIST BARANG PAGE -->
+<!-- LIST BARANG PAGE (Stok per jenis) -->
 <div id="listPage" class="page">
-    <div class="page-header"><button class="back-btn" onclick="showPage('dashboard')">←</button><h1>📦 Daftar Alat Lab</h1></div>
-    <div class="sort-container"><label>Urutkan:</label><select id="sortSelect" class="sort-select" onchange="applySortAndPagination()"><option value="AZ">A-Z</option><option value="ZA">Z-A</option><option value="TERSEDIA">Tersedia Terlebih Dahulu</option><option value="DIPINJAM">Dipinjam Terlebih Dahulu</option><option value="RUSAK">Rusak Terlebih Dahulu</option></select></div>
-    <div id="itemsList" class="items-list"><div class="empty-state">Memuat data...</div></div>
-    <div class="pagination"><button id="prevBtn" class="page-btn" onclick="prevPage()">◀ Sebelumnya</button><span id="pageInfo" class="page-info">Halaman 1</span><button id="nextBtn" class="page-btn" onclick="nextPage()">Selanjutnya ▶</button></div>
+    <div class="page-header">
+        <button class="back-btn" onclick="showPage('dashboard')">←</button>
+        <h1>📦 Stok Inventaris Alat Lab</h1>
+    </div>
+    
+    <div class="sort-container">
+        <label>Urutkan:</label>
+        <select id="sortSelect" class="sort-select" onchange="applySort()">
+            <option value="AZ">A-Z</option>
+            <option value="ZA">Z-A</option>
+            <option value="STOK">Stok Terbanyak</option>
+            <option value="DIPINJAM">Dipinjam Terbanyak</option>
+            <option value="RUSAK">Rusak Terbanyak</option>
+        </select>
+    </div>
+    
+    <div id="itemsList" class="items-list">
+        <div class="empty-state">Memuat data...</div>
+    </div>
 </div>
 
 <!-- HISTORY PAGE -->
 <div id="historyPage" class="page">
-    <div class="page-header"><button class="back-btn" onclick="showPage('dashboard')">←</button><h1>📋 Riwayat Peminjaman</h1></div>
-    <div id="historyList" class="items-list" style="padding: 16px;"><div class="empty-state">Memuat riwayat...</div></div>
-</div>
-
-<!-- ATURAN PAGE -->
-<div id="aturanPage" class="page">
-    <div class="page-header"><button class="back-btn" onclick="showPage('dashboard')">←</button><h1>📜 Aturan Laboratorium</h1></div>
-    <div class="aturan-content">
-        <div class="aturan-card warning-card"><div class="aturan-title">⚠️ PERINGATAN</div><div class="aturan-text">Kelalaian terhadap tata tertib dapat dikenakan sanksi sesuai ketentuan yang berlaku.</div></div>
-        <div class="aturan-card"><div class="aturan-title">1. Penggunaan Dalam Kampus</div><div class="aturan-text">Barang laboratorium hanya diperbolehkan digunakan di area kampus.</div></div>
-        <div class="aturan-card"><div class="aturan-title">2. Proses Peminjaman & Pengembalian</div><div class="aturan-text">Setiap mahasiswa diwajibkan melakukan identifikasi diri menggunakan KTM serta memindai alat/barang melalui sensor yang telah disediakan. Pastikan data mahasiswa dan alat/barang terverifikasi dengan akurat. Sistem akan mengirimkan notifikasi real-time sebagai bukti transaksi.</div></div>
-        <div class="aturan-card"><div class="aturan-title">3. Durasi Peminjaman</div><div class="aturan-text">Peminjaman barang laboratorium disarankan untuk jangka waktu 1 hari. Jika memerlukan waktu lebih dari 1 hari, maka peminjam harus berkoordinasi terlebih dahulu dengan dosen pembimbing.</div></div>
-        <div class="aturan-card"><div class="aturan-title">4. Pengajuan Peminjaman Jangka Panjang</div><div class="aturan-text">Jika dosen pembimbing mengizinkan peminjaman jangka panjang, maka peminjam wajib mengirimkan email kepada kepala laboratorium dan cc kepala program.</div></div>
-        <div class="aturan-card"><div class="aturan-title">5. Batas Maksimal Peminjaman</div><div class="aturan-text">Batas maksimal peminjaman barang laboratorium adalah 1 bulan.</div></div>
-        <div class="aturan-card"><div class="aturan-title">6. Perpanjangan Peminjaman</div><div class="aturan-text">Setelah 1 bulan, jika masih memerlukan barang, peminjam perlu mengajukan permohonan ulang dari proses awal.</div></div>
-        <div class="aturan-card"><div class="aturan-title">7. Pengembalian Barang</div><div class="aturan-text">Peminjam wajib mengembalikan barang yang dipinjam kepada laboran secara langsung.</div></div>
-        <div class="aturan-card"><div class="aturan-title">8. Tanggung Jawab</div><div class="aturan-text">Jika merusak atau menghilangkan barang, peminjam wajib mengganti rugi senilai harga barang tersebut atau mengganti dengan barang baru yang sama.</div></div>
-        <div class="aturan-card"><div class="aturan-text" style="font-style: italic; text-align: center;">Semua peminjam wajib mematuhi peraturan ini demi kelancaran dan keamanan.</div><div class="aturan-text" style="text-align: center; margin-top: 12px;">Tertanda,<br>Laboratorium</div></div>
+    <div class="page-header">
+        <button class="back-btn" onclick="showPage('dashboard')">←</button>
+        <h1>📋 Riwayat Peminjaman</h1>
+    </div>
+    <div id="historyList" class="items-list" style="padding: 16px; flex: 1;">
+        <div class="empty-state">Memuat riwayat...</div>
     </div>
 </div>
 
 <script>
-    // Konfigurasi Firebase
-    const firebaseConfig = {
-        databaseURL: "https://lab-inventory-smart-system-default-rtdb.asia-southeast1.firebasedatabase.app/"
-    };
+    const FIREBASE_URL = "https://lab-inventory-smart-system-default-rtdb.asia-southeast1.firebasedatabase.app/";
     
-    // Inisialisasi Firebase
-    firebase.initializeApp(firebaseConfig);
+    firebase.initializeApp({ databaseURL: FIREBASE_URL });
     const database = firebase.database();
     
     let currentUser = null;
-    let allItems = [];
-    let currentPage = 1;
-    const itemsPerPage = 10;
+    let allStok = [];
     let currentSort = "AZ";
 
-    // 🔐 SHA-256 Hash Function
     async function sha256(message) {
         const encoder = new TextEncoder();
         const data = encoder.encode(message);
         const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-        return hashHex;
+        return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
     }
 
     function showLoading(show) { document.getElementById('loadingOverlay').style.display = show ? 'flex' : 'none'; }
     function showToast(msg) { const t = document.createElement('div'); t.className = 'toast'; t.innerText = msg; document.body.appendChild(t); setTimeout(() => t.remove(), 3000); }
     function escapeHtml(t) { if (!t) return ''; const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
     function formatDate(ds) { try { const d = new Date(ds); return d.toLocaleDateString('id-ID', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' }); } catch(e) { return ds; } }
-    function extractNumber(str) { const m = str.match(/\d+/); return m ? parseInt(m[0]) : 0; }
-    function extractBaseName(str) { return str.replace(/\s\d+$/, '').trim(); }
+    function extractBaseName(str) { return str.replace(/\s\d+$/, '').replace(/\s*\(\d+\)$/, '').trim(); }
 
     // LOGIN
     async function handleLogin() {
         const nama = document.getElementById('loginNama').value.trim();
         const nim = document.getElementById('loginNim').value.trim();
         const password = document.getElementById('loginPassword').value.trim();
+        const cbTerms = document.getElementById('cbTerms').checked;
+        
         if (!nama || !nim || !password) { showToast('Harap isi semua field!'); return; }
+        if (!cbTerms) { showToast('Anda harus menyetujui Tata Tertib Laboratorium!'); return; }
         
         showLoading(true);
-        
         try {
             const hashedPassword = await sha256(password);
-            
             const snapshot = await database.ref('students').orderByChild('nim').equalTo(nim).once('value');
             let found = false;
             snapshot.forEach((child) => {
                 const s = child.val();
-                if (s.nim === nim && s.nama.toLowerCase() === nama.toLowerCase()) {
-                    const hashDb = s.password_hash;
-                    if (hashDb === hashedPassword) {
-                        found = true;
-                        currentUser = { nim: s.nim, nama: s.nama, email: s.email, key: child.key };
-                    }
+                if (s.nim === nim && s.nama.toLowerCase() === nama.toLowerCase() && s.password_hash === hashedPassword) {
+                    found = true;
+                    currentUser = { nim: s.nim, nama: s.nama, email: s.email, key: child.key };
                 }
                 return !found;
             });
@@ -231,17 +265,14 @@
                 document.getElementById('welcomeName').innerHTML = `Halo, ${currentUser.nama}!`;
                 document.getElementById('welcomeNim').innerHTML = `NIM: ${currentUser.nim}`;
                 document.getElementById('loginPage').style.display = 'none';
-                document.getElementById('appContainer').style.display = 'block';
-                await loadItems();
+                document.getElementById('appContainer').style.display = 'flex';
+                await loadStok();
                 await loadHistory();
                 showToast(`Selamat datang ${currentUser.nama}!`);
             } else {
                 showToast('Nama, NIM, atau Password salah!');
             }
-        } catch(e) {
-            console.error(e);
-            showToast('Gagal terhubung ke server. Periksa koneksi internet Anda.');
-        }
+        } catch(e) { console.error(e); showToast('Gagal terhubung ke server'); }
         showLoading(false);
     }
 
@@ -256,22 +287,16 @@
         if (newPassword.length < 4) { showToast('Password minimal 4 karakter!'); return; }
         
         showLoading(true);
-        
         try {
             const hashedOld = await sha256(oldPassword);
-            
             const snapshot = await database.ref('students').orderByChild('nim').equalTo(nim).once('value');
             let found = false, studentId = null;
             snapshot.forEach((child) => {
                 const s = child.val();
-                if (s.nim === nim && s.password_hash === hashedOld) {
-                    found = true;
-                    studentId = child.key;
-                }
+                if (s.nim === nim && s.password_hash === hashedOld) { found = true; studentId = child.key; }
                 return !found;
             });
             if (!found) { showToast('NIM atau Password lama salah!'); showLoading(false); return; }
-            
             const hashedNew = await sha256(newPassword);
             await database.ref('students').child(studentId).update({ password_hash: hashedNew });
             showToast('Password berhasil diubah! Silakan login dengan password baru.');
@@ -281,88 +306,110 @@
         showLoading(false);
     }
 
-    function openChangePasswordModal() { document.getElementById('changePasswordModal').style.display = 'flex'; if(currentUser) document.getElementById('modalNim').value = currentUser.nim; }
-    function closeChangePasswordModal() { document.getElementById('changePasswordModal').style.display = 'none'; }
-
-    // LOAD ITEMS
-    async function loadItems() {
+    // LOAD STOK (Grouped by item name)
+    async function loadStok() {
         try {
             const snapshot = await database.ref('items').once('value');
-            allItems = [];
+            const groups = {};
             snapshot.forEach((child) => {
                 const item = child.val();
-                allItems.push({ id: child.key, nama_barang: item.nama_barang || 'Tanpa Nama', status: item.status || 'tersedia' });
+                const nama = item.nama_barang || 'Unknown';
+                const baseName = extractBaseName(nama);
+                const status = item.status || 'tersedia';
+                if (!groups[baseName]) groups[baseName] = { tersedia: 0, dipinjam: 0, rusak: 0 };
+                if (status === 'tersedia') groups[baseName].tersedia++;
+                else if (status === 'dipinjam') groups[baseName].dipinjam++;
+                else if (status === 'rusak') groups[baseName].rusak++;
             });
-            applySortAndPagination();
-        } catch(e) { 
-            console.error(e); 
-            document.getElementById('itemsList').innerHTML = '<div class="empty-state">⚠️ Gagal memuat data barang. Periksa koneksi atau Firebase Rules.</div>';
-        }
+            allStok = Object.entries(groups).map(([nama, data]) => ({ nama, stok: data.tersedia, dipinjam: data.dipinjam, rusak: data.rusak }));
+            applySort();
+        } catch(e) { console.error(e); document.getElementById('itemsList').innerHTML = '<div class="empty-state">Gagal memuat data barang</div>'; }
     }
 
-    function applySortAndPagination() {
+    function applySort() {
         currentSort = document.getElementById('sortSelect').value;
-        let sorted = [...allItems];
-        if (currentSort === 'AZ') sorted.sort((a,b) => { const ba=extractBaseName(a.nama_barang||''), bb=extractBaseName(b.nama_barang||''); if(ba!==bb) return ba.localeCompare(bb); return extractNumber(a.nama_barang)-extractNumber(b.nama_barang); });
-        else if (currentSort === 'ZA') sorted.sort((a,b) => { const ba=extractBaseName(a.nama_barang||''), bb=extractBaseName(b.nama_barang||''); if(ba!==bb) return bb.localeCompare(ba); return extractNumber(b.nama_barang)-extractNumber(a.nama_barang); });
-        else if (currentSort === 'TERSEDIA') sorted.sort((a,b) => { if(a.status==='tersedia' && b.status!=='tersedia') return -1; if(a.status!=='tersedia' && b.status==='tersedia') return 1; return (a.nama_barang||'').localeCompare(b.nama_barang||''); });
-        else if (currentSort === 'DIPINJAM') sorted.sort((a,b) => { if(a.status==='dipinjam' && b.status!=='dipinjam') return -1; if(a.status!=='dipinjam' && b.status==='dipinjam') return 1; return (a.nama_barang||'').localeCompare(b.nama_barang||''); });
-        else if (currentSort === 'RUSAK') sorted.sort((a,b) => { if(a.status==='rusak' && b.status!=='rusak') return -1; if(a.status!=='rusak' && b.status==='rusak') return 1; return (a.nama_barang||'').localeCompare(b.nama_barang||''); });
-        const total = Math.ceil(sorted.length / itemsPerPage);
-        const start = (currentPage-1)*itemsPerPage;
-        const paginated = sorted.slice(start, start+itemsPerPage);
+        let sorted = [...allStok];
+        if (currentSort === 'AZ') sorted.sort((a,b) => a.nama.localeCompare(b.nama));
+        else if (currentSort === 'ZA') sorted.sort((a,b) => b.nama.localeCompare(a.nama));
+        else if (currentSort === 'STOK') sorted.sort((a,b) => b.stok - a.stok);
+        else if (currentSort === 'DIPINJAM') sorted.sort((a,b) => b.dipinjam - a.dipinjam);
+        else if (currentSort === 'RUSAK') sorted.sort((a,b) => b.rusak - a.rusak);
         const container = document.getElementById('itemsList');
-        if(paginated.length===0) container.innerHTML = '<div class="empty-state">✨ Belum ada data barang ✨</div>';
-        else container.innerHTML = paginated.map(item => { let cls='status-tersedia', txt='🟢 Tersedia'; if(item.status==='dipinjam'){ cls='status-dipinjam'; txt='🔴 Dipinjam'; } else if(item.status==='rusak'){ cls='status-rusak'; txt='⚠️ Rusak'; } return `<div class="item-card"><div class="item-name">${escapeHtml(item.nama_barang)}</div><span class="item-status ${cls}">${txt}</span></div>`; }).join('');
-        document.getElementById('pageInfo').innerHTML = `Halaman ${currentPage} dari ${total||1}`;
-        document.getElementById('prevBtn').disabled = currentPage===1;
-        document.getElementById('nextBtn').disabled = currentPage===total || total===0;
+        if (sorted.length === 0) container.innerHTML = '<div class="empty-state">✨ Belum ada data barang ✨</div>';
+        else container.innerHTML = sorted.map(item => `
+            <div class="item-card">
+                <div class="item-name">${escapeHtml(item.nama)}</div>
+                <div class="stats-row">
+                    <span class="stat stat-stok">📦 Stok: ${item.stok}</span>
+                    <span class="stat stat-dipinjam">🔴 Dipinjam: ${item.dipinjam}</span>
+                    <span class="stat stat-rusak">⚠️ Rusak: ${item.rusak}</span>
+                </div>
+            </div>
+        `).join('');
     }
-    function prevPage() { if(currentPage>1){ currentPage--; applySortAndPagination(); } }
-    function nextPage() { currentPage++; applySortAndPagination(); }
 
-    // LOAD HISTORY
+    // LOAD HISTORY with complete dates
     async function loadHistory() {
-        if(!currentUser) return;
+        if (!currentUser) return;
         try {
             const snapshot = await database.ref('transactions').orderByChild('nim').equalTo(currentUser.nim).once('value');
             const list = [];
             snapshot.forEach((child) => {
                 const t = child.val();
-                list.push({ item_name: t.item_name || 'Unknown', status: t.status || 'unknown', waktu_pinjam: t.waktu_pinjam || t.created_at });
+                list.push({ 
+                    item_name: t.item_name || 'Unknown', 
+                    status: t.status || 'unknown', 
+                    waktu_pinjam: t.waktu_pinjam || t.created_at,
+                    waktu_kembali: t.waktu_kembali || null
+                });
             });
             list.sort((a,b)=> (b.waktu_pinjam||'').localeCompare(a.waktu_pinjam||''));
             const container = document.getElementById('historyList');
-            if(list.length===0) container.innerHTML = '<div class="empty-state">✨ Belum ada riwayat peminjaman ✨</div>';
-            else container.innerHTML = list.map(h => `<div class="history-item"><div class="history-item-name">${escapeHtml(h.item_name)}</div><div class="history-date">📅 ${formatDate(h.waktu_pinjam)}</div><div class="history-status" style="color:${h.status==='active'?'#F57C00':'#2E7D32'}">${h.status==='active'?'🟡 Sedang Dipinjam':'✅ Selesai'}</div></div>`).join('');
-        } catch(e) { console.error(e); document.getElementById('historyList').innerHTML = '<div class="empty-state">⚠️ Gagal memuat riwayat</div>'; }
+            if (list.length === 0) container.innerHTML = '<div class="empty-state">✨ Belum ada riwayat peminjaman ✨</div>';
+            else container.innerHTML = list.map(h => {
+                let statusText = h.status === 'active' ? '🟡 Sedang Dipinjam' : '✅ Selesai';
+                let statusColor = h.status === 'active' ? '#F57C00' : '#2E7D32';
+                let tanggal = `Pinjam: ${formatDate(h.waktu_pinjam)}`;
+                if (h.waktu_kembali) tanggal += `<br>Kembali: ${formatDate(h.waktu_kembali)}`;
+                else if (h.status === 'active') tanggal += `<br>Kembali: Belum dikembalikan`;
+                else tanggal += `<br>Kembali: -`;
+                return `<div class="history-item"><div class="history-item-name">${escapeHtml(h.item_name)}</div><div class="history-dates">📅 ${tanggal}</div><div class="history-status" style="color: ${statusColor}">${statusText}</div></div>`;
+            }).join('');
+        } catch(e) { console.error(e); document.getElementById('historyList').innerHTML = '<div class="empty-state">Gagal memuat riwayat</div>'; }
     }
 
+    function openChangePasswordModal() { document.getElementById('changePasswordModal').style.display = 'flex'; if(currentUser) document.getElementById('modalNim').value = currentUser.nim; }
+    function closeChangePasswordModal() { document.getElementById('changePasswordModal').style.display = 'none'; }
+    function openTermsModal() { document.getElementById('termsModal').style.display = 'flex'; }
+    function closeTermsModal() { document.getElementById('termsModal').style.display = 'none'; }
+    
     function showPage(p) {
-        document.getElementById('appContainer').style.display='none';
-        document.getElementById('listPage').style.display='none';
-        document.getElementById('historyPage').style.display='none';
-        document.getElementById('aturanPage').style.display='none';
-        if(p==='dashboard'){ document.getElementById('appContainer').style.display='block'; loadItems(); loadHistory(); }
-        else if(p==='listPage'){ document.getElementById('listPage').style.display='block'; currentPage=1; applySortAndPagination(); }
-        else if(p==='historyPage'){ document.getElementById('historyPage').style.display='block'; loadHistory(); }
-        else if(p==='aturanPage'){ document.getElementById('aturanPage').style.display='block'; }
+        document.getElementById('appContainer').style.display = 'none';
+        document.getElementById('listPage').style.display = 'none';
+        document.getElementById('historyPage').style.display = 'none';
+        if (p === 'dashboard') { document.getElementById('appContainer').style.display = 'flex'; loadStok(); loadHistory(); }
+        else if (p === 'listPage') { document.getElementById('listPage').style.display = 'flex'; }
+        else if (p === 'historyPage') { document.getElementById('historyPage').style.display = 'flex'; loadHistory(); }
     }
 
-    function logout() { 
-        currentUser = null; 
-        localStorage.removeItem('currentUser'); 
-        document.getElementById('loginPage').style.display = 'flex'; 
-        document.getElementById('appContainer').style.display = 'none'; 
-        document.getElementById('loginNama').value = ''; 
-        document.getElementById('loginNim').value = ''; 
-        document.getElementById('loginPassword').value = ''; 
-    }
+    function logout() { currentUser = null; localStorage.removeItem('currentUser'); document.getElementById('loginPage').style.display = 'flex'; document.getElementById('appContainer').style.display = 'none'; document.getElementById('loginNama').value = ''; document.getElementById('loginNim').value = ''; document.getElementById('loginPassword').value = ''; document.getElementById('cbTerms').checked = false; }
 
-    // ❌ TIDAK ADA AUTO-LOGIN - SELALU KE LOGIN PAGE
-    // Selalu tampilkan halaman login saat pertama kali load
-    document.getElementById('loginPage').style.display = 'flex';
-    document.getElementById('appContainer').style.display = 'none';
+    // Check saved login
+    const saved = localStorage.getItem('currentUser');
+    if (saved) {
+        try {
+            currentUser = JSON.parse(saved);
+            document.getElementById('welcomeName').innerHTML = `Halo, ${currentUser.nama}!`;
+            document.getElementById('welcomeNim').innerHTML = `NIM: ${currentUser.nim}`;
+            document.getElementById('loginPage').style.display = 'none';
+            document.getElementById('appContainer').style.display = 'flex';
+            loadStok();
+            loadHistory();
+        } catch(e) { console.error(e); }
+    } else {
+        document.getElementById('loginPage').style.display = 'flex';
+        document.getElementById('appContainer').style.display = 'none';
+    }
 </script>
 </body>
 </html>
