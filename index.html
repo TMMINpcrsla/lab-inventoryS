@@ -237,6 +237,19 @@
     function formatDate(ds) { try { const d = new Date(ds); return d.toLocaleDateString('id-ID', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' }); } catch(e) { return ds; } }
     function extractBaseName(str) { return str.replace(/\s\d+$/, '').replace(/\s*\(\d+\)$/, '').trim(); }
 
+    // 🔥 FUNGSI UNTUK TEKAN ENTER DI LOGIN
+    function setupEnterKeyListener() {
+        const inputs = ['loginNama', 'loginNim', 'loginPassword'];
+        inputs.forEach(id => {
+            document.getElementById(id).addEventListener('keypress', function(event) {
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                    handleLogin();
+                }
+            });
+        });
+    }
+
     // LOGIN
     async function handleLogin() {
         const nama = document.getElementById('loginNama').value.trim();
@@ -348,7 +361,7 @@
         `).join('');
     }
 
-    // LOAD HISTORY with complete dates
+    // LOAD HISTORY with complete dates (dengan logo waktu pinjam dan kembali)
     async function loadHistory() {
         if (!currentUser) return;
         try {
@@ -369,11 +382,11 @@
             else container.innerHTML = list.map(h => {
                 let statusText = h.status === 'active' ? '🟡 Sedang Dipinjam' : '✅ Selesai';
                 let statusColor = h.status === 'active' ? '#F57C00' : '#2E7D32';
-                let tanggal = `Pinjam: ${formatDate(h.waktu_pinjam)}`;
-                if (h.waktu_kembali) tanggal += `<br>Kembali: ${formatDate(h.waktu_kembali)}`;
-                else if (h.status === 'active') tanggal += `<br>Kembali: Belum dikembalikan`;
-                else tanggal += `<br>Kembali: -`;
-                return `<div class="history-item"><div class="history-item-name">${escapeHtml(h.item_name)}</div><div class="history-dates">📅 ${tanggal}</div><div class="history-status" style="color: ${statusColor}">${statusText}</div></div>`;
+                let tanggal = `📅 Pinjam: ${formatDate(h.waktu_pinjam)}`;
+                if (h.waktu_kembali) tanggal += `<br>🔄 Kembali: ${formatDate(h.waktu_kembali)}`;
+                else if (h.status === 'active') tanggal += `<br>🔄 Kembali: Belum dikembalikan`;
+                else tanggal += `<br>🔄 Kembali: -`;
+                return `<div class="history-item"><div class="history-item-name">${escapeHtml(h.item_name)}</div><div class="history-dates">${tanggal}</div><div class="history-status" style="color: ${statusColor}">${statusText}</div></div>`;
             }).join('');
         } catch(e) { console.error(e); document.getElementById('historyList').innerHTML = '<div class="empty-state">Gagal memuat riwayat</div>'; }
     }
@@ -393,6 +406,9 @@
     }
 
     function logout() { currentUser = null; localStorage.removeItem('currentUser'); document.getElementById('loginPage').style.display = 'flex'; document.getElementById('appContainer').style.display = 'none'; document.getElementById('loginNama').value = ''; document.getElementById('loginNim').value = ''; document.getElementById('loginPassword').value = ''; document.getElementById('cbTerms').checked = false; }
+
+    // 🔥 INISIALISASI - SETUP ENTER KEY LISTENER
+    setupEnterKeyListener();
 
     // Check saved login
     const saved = localStorage.getItem('currentUser');
