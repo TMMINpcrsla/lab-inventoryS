@@ -19,7 +19,8 @@
         /* Login Page */
         .login-container { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; background: linear-gradient(135deg, #1976D2, #1565C0); }
         .login-card { background: white; border-radius: 24px; padding: 32px; width: 100%; max-width: 400px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
-        .login-icon { text-align: center; font-size: 56px; margin-bottom: 16px; }
+        .login-logo { text-align: center; margin-bottom: 16px; }
+        .login-logo img { width: 100px; height: 100px; object-fit: contain; }
         .login-title { text-align: center; font-size: 24px; font-weight: 700; color: #1976D2; margin-bottom: 8px; }
         .login-subtitle { text-align: center; font-size: 14px; color: #666; margin-bottom: 32px; }
         .input-group { margin-bottom: 20px; }
@@ -41,10 +42,12 @@
 
         /* Dashboard */
         .app-container { display: none; min-height: 100vh; background: #F5F7FA; flex-direction: column; }
-        .app-header { background: linear-gradient(135deg, #1976D2, #1565C0); padding: 24px; padding-top: 50px; color: white; }
-        .app-header h2 { font-size: 20px; margin-bottom: 4px; }
-        .app-header p { font-size: 13px; opacity: 0.8; margin-bottom: 8px; }
-        .app-header .app-subtitle { font-size: 12px; opacity: 0.6; margin-top: 4px; }
+        .app-header { background: linear-gradient(135deg, #1976D2, #1565C0); padding: 20px 24px; color: white; display: flex; align-items: center; gap: 16px; }
+        .app-header .logo { width: 70px; height: 70px; object-fit: contain; }
+        .header-text { flex: 1; }
+        .header-text h2 { font-size: 18px; margin-bottom: 4px; }
+        .header-text p { font-size: 12px; opacity: 0.8; margin-bottom: 4px; }
+        .header-text .subtitle { font-size: 11px; opacity: 0.6; }
         
         /* Menu Cards Vertical */
         .menu-vertical { flex: 1; display: flex; flex-direction: column; padding: 16px; gap: 16px; }
@@ -103,7 +106,9 @@
 <!-- LOGIN PAGE -->
 <div id="loginPage" class="login-container">
     <div class="login-card">
-        <div class="login-icon">🔬</div>
+        <div class="login-logo">
+            <img src="https://postimg.cc/Lg6bDZPH" alt="Logo" style="width: 100px; height: 100px; object-fit: contain;">
+        </div>
         <h1 class="login-title">Lab Inventory System</h1>
         <p class="login-subtitle">Akses untuk Mahasiswa</p>
         <div class="input-group"><label>Nama Lengkap</label><input type="text" id="loginNama" placeholder="Masukkan nama lengkap"></div>
@@ -155,12 +160,15 @@
     </div>
 </div>
 
-<!-- DASHBOARD - Vertical Layout -->
+<!-- DASHBOARD -->
 <div id="appContainer" class="app-container">
     <div class="app-header">
-        <h2 id="welcomeName">Selamat Datang,</h2>
-        <p id="welcomeNim">NIM: -</p>
-        <div class="app-subtitle">Lab Inventory System</div>
+        <img class="logo" src="https://postimg.cc/Lg6bDZPH" alt="Logo">
+        <div class="header-text">
+            <h2 id="welcomeName">Selamat Datang,</h2>
+            <p id="welcomeNim">NIM: -</p>
+            <div class="subtitle">Lab Inventory System</div>
+        </div>
     </div>
     
     <div class="menu-vertical">
@@ -180,7 +188,7 @@
     <button class="btn-logout" onclick="logout()">LOGOUT</button>
 </div>
 
-<!-- LIST BARANG PAGE (Stok per jenis) -->
+<!-- LIST BARANG PAGE -->
 <div id="listPage" class="page">
     <div class="page-header">
         <button class="back-btn" onclick="showPage('dashboard')">←</button>
@@ -237,7 +245,6 @@
     function formatDate(ds) { try { const d = new Date(ds); return d.toLocaleDateString('id-ID', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' }); } catch(e) { return ds; } }
     function extractBaseName(str) { return str.replace(/\s\d+$/, '').replace(/\s*\(\d+\)$/, '').trim(); }
 
-    // 🔥 FUNGSI UNTUK TEKAN ENTER DI LOGIN
     function setupEnterKeyListener() {
         const inputs = ['loginNama', 'loginNim', 'loginPassword'];
         inputs.forEach(id => {
@@ -250,7 +257,6 @@
         });
     }
 
-    // LOGIN
     async function handleLogin() {
         const nama = document.getElementById('loginNama').value.trim();
         const nim = document.getElementById('loginNim').value.trim();
@@ -289,7 +295,6 @@
         showLoading(false);
     }
 
-    // CHANGE PASSWORD
     async function changePassword() {
         const nim = document.getElementById('modalNim').value.trim();
         const oldPassword = document.getElementById('modalOldPassword').value.trim();
@@ -319,7 +324,6 @@
         showLoading(false);
     }
 
-    // LOAD STOK (Grouped by item name)
     async function loadStok() {
         try {
             const snapshot = await database.ref('items').once('value');
@@ -361,7 +365,6 @@
         `).join('');
     }
 
-    // LOAD HISTORY with complete dates (dengan logo waktu pinjam dan kembali)
     async function loadHistory() {
         if (!currentUser) return;
         try {
@@ -407,10 +410,8 @@
 
     function logout() { currentUser = null; localStorage.removeItem('currentUser'); document.getElementById('loginPage').style.display = 'flex'; document.getElementById('appContainer').style.display = 'none'; document.getElementById('loginNama').value = ''; document.getElementById('loginNim').value = ''; document.getElementById('loginPassword').value = ''; document.getElementById('cbTerms').checked = false; }
 
-    // 🔥 INISIALISASI - SETUP ENTER KEY LISTENER
     setupEnterKeyListener();
 
-    // Check saved login
     const saved = localStorage.getItem('currentUser');
     if (saved) {
         try {
